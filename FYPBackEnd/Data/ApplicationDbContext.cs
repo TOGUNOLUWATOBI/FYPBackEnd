@@ -7,5 +7,6 @@ namespace FYPBackEnd.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<ApplicationUser> Users { get; set; }
+        public DbSet<Otp> Otps { get; set; }
     }
 }
