@@ -6,7 +6,7 @@ using System;
 namespace FYPBackEnd.Core
 {
     public static class Utility
-    {
+    { 
         public static string FormatPhoneNumber(string phoneNo)
         {
             if (string.IsNullOrEmpty(phoneNo))
