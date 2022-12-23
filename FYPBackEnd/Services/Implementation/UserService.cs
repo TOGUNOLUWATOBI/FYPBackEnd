@@ -1,8 +1,10 @@
-﻿using FYPBackEnd.Core;
+﻿using AutoMapper;
+using FYPBackEnd.Core;
 using FYPBackEnd.Data;
 using FYPBackEnd.Data.Entities;
 using FYPBackEnd.Data.Enums;
-using FYPBackEnd.Data.Models;
+using FYPBackEnd.Data.Models.RequestModel;
+using FYPBackEnd.Data.Models.ViewModel;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -15,12 +17,18 @@ namespace FYPBackEnd.Services.Implementation
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext context;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IMapper map;
+        private readonly IMailService mailService;
 
 
-        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService)
         {
             _userManager = userManager;
             this.context = context;
+            _signInManager = signInManager;
+            this.map = map;
+            this.mailService = mailService;
         }
 
         public Task<ApiResponse> ActivateUser(string token)
@@ -46,6 +54,8 @@ namespace FYPBackEnd.Services.Implementation
             user.State = model.State;
             user.Status = UserStatus.Inactive.ToString();
             user.Gender = model.Gender;
+            //todo: send otp for user to activate/confirm email/phonenumber
+            _ = await mailService.SendVerificationEmailAsync(user);
 
             return ReturnedResponse.SuccessResponse("User successfuly registered", user);
         }
@@ -73,7 +83,8 @@ namespace FYPBackEnd.Services.Implementation
                 return ReturnedResponse.ErrorResponse("User with that email couldn't be found", null);
 
             //todo: change user model to a user dto model to avoid exposing hashed password
-            return ReturnedResponse.SuccessResponse("User found", user);
+            var userDto = map.Map<UserDto>(user);
+            return ReturnedResponse.SuccessResponse("User found", userDto);
         }
 
         public async Task<ApiResponse> GetUsers()
@@ -84,16 +95,25 @@ namespace FYPBackEnd.Services.Implementation
 
         public async Task<ApiResponse> Login(LoginRequestModel model)
         {
+            
             if (string.IsNullOrEmpty(model.EmailAddress))
                 return ReturnedResponse.ErrorResponse("User Email can't be null or empty", null);
             var user = await _userManager.FindByEmailAsync(model.EmailAddress);
 
-            if (user == null)
-                return ReturnedResponse.ErrorResponse("Invalid Email/Password", null);
-            var verifiedCorrectPassword = _userManager.PasswordHasher.VerifyHashedPassword(user, user.Password,model.Password);
+            if (user != null)
+            {
 
-            if (verifiedCorrectPassword.ToString().Equals("Success"))
-                return ReturnedResponse.SuccessResponse("User Successfully logged in", null);
+                var isValid = await _signInManager.PasswordSignInAsync(user, model.Password, false, true);    //_userManager.PasswordHasher.VerifyHashedPassword(user, user.Password,model.Password);
+
+                if (isValid.Succeeded)
+                {
+                    //todo: check if the user is verifed, if not verified resend otp
+                    //todo: generate jwt to send to the front end
+                    //todo: create login response model and send to get jwt and extra stuff
+                    return ReturnedResponse.SuccessResponse("User Successfully logged in", null);
+                }
+
+            }
 
             return ReturnedResponse.ErrorResponse("Invalid Email/Password", null);
         }

@@ -17,6 +17,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using FYPBackEnd.Settings;
+using FYPBackEnd.Core;
 
 namespace FYPBackEnd
 {
@@ -38,6 +40,12 @@ namespace FYPBackEnd
             });
             services.AddControllers();
             services.AddScoped<IUserService, UserService>();
+            services.AddTransient<IMailService, MailService>();
+            services.AddScoped<IOtpService, OtpService>();
+
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+
+            services.Configure<MailSettings>(Configuration.GetSection(nameof(MailSettings)));
 
             services.AddDbContext<ApplicationDbContext>();
 

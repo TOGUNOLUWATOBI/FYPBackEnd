@@ -2,6 +2,7 @@
 using FYPBackEnd.Data.ReturnedResponse;
 using System.Text.RegularExpressions;
 using System;
+using FYPBackEnd.Data.Models;
 
 namespace FYPBackEnd.Core
 {
@@ -39,6 +40,13 @@ namespace FYPBackEnd.Core
             var finalString = new String(stringChars);
 
             return finalString;
+        }
+
+        public static string GenerateOtpCode()
+        {
+            var randomInt = new Random();
+            int otpCode = randomInt.Next(10000, 100000);
+            return otpCode.ToString();
         }
 
         //public static bool CheckExternalUser(string userRole)
@@ -105,6 +113,7 @@ namespace FYPBackEnd.Core
 
             return true;
         }
+
     }
 }
 

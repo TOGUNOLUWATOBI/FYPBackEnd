@@ -9,6 +9,7 @@ namespace FYPBackEnd.Data.Entities
         public string UserId { get; set; }
         public DateTime ExpiryDate { get; set; }
         public string OtpCode { get; set; }
+        public string Email { get; set; }
         public bool IsUsed { get; set; }
         public string Purpose { get; set; }
     }

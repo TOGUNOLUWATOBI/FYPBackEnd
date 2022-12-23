@@ -1,4 +1,4 @@
-﻿using FYPBackEnd.Data.Models;
+﻿using FYPBackEnd.Data.Models.RequestModel;
 using FYPBackEnd.Data.ReturnedResponse;
 using System.Globalization;
 using System.Threading.Tasks;

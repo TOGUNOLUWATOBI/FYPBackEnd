@@ -20,4 +20,10 @@
         Inactive,
         Blacklisted
     }
+
+    public enum OtpPurpose
+    {
+        UserVerification,
+        PasswordReset
+    }
 }

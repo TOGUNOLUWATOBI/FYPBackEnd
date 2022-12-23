@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FYPBackEnd.Data.Models
+namespace FYPBackEnd.Data.Models.RequestModel
 {
     public class SignUpRequestModel
     {
         [Required]
         public string Firstname { get; set; }
-        [Required] 
-        public string Lastname { get;}
+        [Required]
+        public string Lastname { get; }
         [Required]
         public string Email { get; set; }
         [Required]

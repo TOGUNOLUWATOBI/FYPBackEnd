@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FYPBackEnd.Data.Models
+namespace FYPBackEnd.Data.Models.RequestModel
 {
     public class LoginRequestModel
     {
