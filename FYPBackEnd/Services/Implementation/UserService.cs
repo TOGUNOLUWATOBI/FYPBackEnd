@@ -63,7 +63,6 @@ namespace FYPBackEnd.Services.Implementation
         public async Task<ApiResponse> DeActivateUser(string email)
         {
             // change the implementation do not delete user accoounts easily just make user inactive
-
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return ReturnedResponse.ErrorResponse("User not found", null);
@@ -71,7 +70,6 @@ namespace FYPBackEnd.Services.Implementation
             await context.SaveChangesAsync();
 
             return ReturnedResponse.ErrorResponse("User successfully deactivated", null);
-
         }
 
         
