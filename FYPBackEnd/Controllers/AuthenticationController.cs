@@ -189,7 +189,7 @@ namespace FYPBackEnd.Controllers
             catch (Exception ex)
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
-                log.LogInformation(string.Concat($"Error occured in the getting user", errMessage));
+                log.LogInformation(string.Concat($"Error occured in the getting user ", errMessage));
                 return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null));
             }
         }
