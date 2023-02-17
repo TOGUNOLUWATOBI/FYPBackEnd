@@ -31,9 +31,17 @@ namespace FYPBackEnd.Services.Implementation
             this.mailService = mailService;
         }
 
-        public Task<ApiResponse> ActivateUser(string token)
+        public async Task<ApiResponse> ActivateUser(string email)
         {
-            throw new System.NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return ReturnedResponse.ErrorResponse("User not found", null);
+            if (user.Status == UserStatus.Blacklisted.ToString())
+                return ReturnedResponse.ErrorResponse("Can't activate user as user is blacklisted", null);
+            user.Status = UserStatus.Active.ToString();
+            await context.SaveChangesAsync();
+
+            return ReturnedResponse.ErrorResponse("User successfully activated", null);
         }
 
         public async Task<ApiResponse> CreateUser(SignUpRequestModel model)
@@ -45,10 +53,11 @@ namespace FYPBackEnd.Services.Implementation
 
             var user = new ApplicationUser();
             user.Email = model.Email;
-            user.Password = _userManager.PasswordHasher.HashPassword(user,model.Password);
+            user.UserName = model.Email;
+            //user.Password = _userManager.PasswordHasher.HashPassword(user,model.Password);
             user.FirstName = model.Firstname;
             user.LastName = model.Lastname;
-            user.PhoneNumber = Utility.FormatPhoneNumber( model.PhoneNumber);
+            user.PhoneNumber = Utility.FormatPhoneNumber(model.PhoneNumber);
             user.Address = model.Address;
             user.Lga = model.LGA;
             user.State = model.State;
@@ -57,7 +66,9 @@ namespace FYPBackEnd.Services.Implementation
             //todo: send otp for user to activate/confirm email/phonenumber
             _ = await mailService.SendVerificationEmailAsync(user);
 
-            return ReturnedResponse.SuccessResponse("User successfuly registered", user);
+            var x = await _userManager.CreateAsync(user,model.Password);
+            var userDto = map.Map<UserDto>(user);
+            return ReturnedResponse.SuccessResponse("User successfuly registered", userDto);
         }
 
         public async Task<ApiResponse> DeActivateUser(string email)
@@ -66,7 +77,10 @@ namespace FYPBackEnd.Services.Implementation
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return ReturnedResponse.ErrorResponse("User not found", null);
+            if (user.Status == UserStatus.Blacklisted.ToString())
+                return ReturnedResponse.ErrorResponse("Can't deactivate user as user is blacklisted", null);
             user.Status = UserStatus.Inactive.ToString();
+            context.Update(user);
             await context.SaveChangesAsync();
 
             return ReturnedResponse.ErrorResponse("User successfully deactivated", null);

@@ -19,6 +19,8 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using FYPBackEnd.Settings;
 using FYPBackEnd.Core;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FYPBackEnd
 {
@@ -34,6 +36,7 @@ namespace FYPBackEnd
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnectionString")));
             services.AddSwaggerGen(c =>
             {
                 
@@ -49,11 +52,19 @@ namespace FYPBackEnd
 
             services.AddDbContext<ApplicationDbContext>();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>(options=>
+            {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> appUser)/*, RoleManager<ApplicationRole> appRole)*/
         {
             if (env.IsDevelopment())
             {
