@@ -30,6 +30,8 @@ steps:
 
 - task: VSTest@2
   inputs:
+    command: test
+    projects: '**/*Test/*.csproj'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
