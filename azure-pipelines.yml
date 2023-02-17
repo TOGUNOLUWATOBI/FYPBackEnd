@@ -30,9 +30,9 @@ steps:
 
 - task: VSTest@2
   inputs:
-    command: test
-    projects: '**/*Test/*.csproj'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'test'
+    arguments: '--no-build --configuration $(buildConfiguration)'
+    publishTestResults: true
+    projects: '**/*.Tests.csproj'
 
 - task: PublishBuildArtifacts@1
