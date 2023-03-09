@@ -21,6 +21,11 @@ using FYPBackEnd.Settings;
 using FYPBackEnd.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.IO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace FYPBackEnd
 {
@@ -36,12 +41,70 @@ namespace FYPBackEnd
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddControllers();
+
+
+            //todo: change this so that endpoints can use authentication and authorization
+
+            //services.AddControllers(opt =>
+            //{
+            //    var policy = new AuthorizationPolicyBuilder("Bearer").RequireAuthenticatedUser().Build();
+            //    opt.Filters.Add(new AuthorizeFilter(policy));
+            //});
+
+            services.AddMvc();
+
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnectionString")));
+
+            var secret = Configuration.GetSection("AppSettings").GetSection("JwtSecret").Value;
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+
+            services.AddAuthorization(options => options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme).Build());
             services.AddSwaggerGen(c =>
             {
-                
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FYPBACKEND API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                        {new OpenApiSecurityScheme{Reference = new OpenApiReference{
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                        }
+                        }, new string[] { }  }});
             });
-            services.AddControllers();
+
+
+
+
+
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<IMailService, MailService>();
             services.AddScoped<IOtpService, OtpService>();
@@ -49,6 +112,7 @@ namespace FYPBackEnd
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
             services.Configure<MailSettings>(Configuration.GetSection(nameof(MailSettings)));
+            services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
 
             services.AddDbContext<ApplicationDbContext>();
 
@@ -78,12 +142,15 @@ namespace FYPBackEnd
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

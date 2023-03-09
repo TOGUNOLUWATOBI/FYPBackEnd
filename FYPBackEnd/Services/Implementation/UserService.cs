@@ -9,7 +9,14 @@ using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using FYPBackEnd.Data.Models.ResponseModel;
+using FYPBackEnd.Settings;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -20,15 +27,17 @@ namespace FYPBackEnd.Services.Implementation
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper map;
         private readonly IMailService mailService;
+        private readonly AppSettings _appSettings;
 
 
-        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService)
+        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings)
         {
             _userManager = userManager;
             this.context = context;
             _signInManager = signInManager;
             this.map = map;
             this.mailService = mailService;
+            _appSettings = appSettings.Value;
         }
 
         public async Task<ApiResponse> ActivateUser(string email)
@@ -57,14 +66,14 @@ namespace FYPBackEnd.Services.Implementation
             //user.Password = _userManager.PasswordHasher.HashPassword(user,model.Password);
             user.FirstName = model.Firstname;
             user.LastName = model.Lastname;
-            user.PhoneNumber = Utility.FormatPhoneNumber(model.PhoneNumber);
+            user.PhoneNumber = Core.Utility.FormatPhoneNumber(model.PhoneNumber);
             user.Address = model.Address;
             user.Lga = model.LGA;
             user.State = model.State;
             user.Status = UserStatus.Inactive.ToString();
             user.Gender = model.Gender;
             //todo: send otp for user to activate/confirm email/phonenumber
-            _ = await mailService.SendVerificationEmailAsync(user);
+            _ = await mailService.SendVerificationEmailAsync(user, OtpPurpose.UserVerification.ToString());
 
             var x = await _userManager.CreateAsync(user,model.Password);
             var userDto = map.Map<UserDto>(user);
@@ -121,8 +130,29 @@ namespace FYPBackEnd.Services.Implementation
                 {
                     //todo: check if the user is verifed, if not verified resend otp
                     //todo: generate jwt to send to the front end
+
+
+                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
+
+                    var token = new JwtSecurityToken(
+                        issuer: _appSettings.ValidIssuer,
+                        audience: _appSettings.ValidAudience,
+                        expires: DateTime.Now.AddHours(_appSettings.JwtLifespan), 
+                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                        );
+
+                    var bearerToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+                    var loginResponseModel = new LoginResponseModel
+                    {
+                        AccessToken = bearerToken,
+                        TokenType = "Bearer",
+                        Email = model.EmailAddress,
+                        ExpiresIn = DateTime.Now.AddHours(_appSettings.JwtLifespan)
+                    };
+                   
                     //todo: create login response model and send to get jwt and extra stuff
-                    return ReturnedResponse.SuccessResponse("User Successfully logged in", null);
+                    return ReturnedResponse.SuccessResponse("User Successfully logged in", loginResponseModel);
                 }
 
             }

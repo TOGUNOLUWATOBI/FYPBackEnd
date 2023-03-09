@@ -13,7 +13,8 @@ namespace FYPBackEnd.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthenticationController : Controller
+    
+    public class AuthenticationController : ControllerBase
     {
         private readonly IUserService userService;
         private readonly ILogger<AuthenticationController> log;
@@ -40,7 +41,7 @@ namespace FYPBackEnd.Controllers
                 }
 
                 var resp = await userService.CreateUser(model);
-                if (resp.Message == Status.Successful.ToString())
+                if (resp.StatusCode == Status.Successful.ToString())
                 {
                     return Ok(resp);
                 }
@@ -75,7 +76,7 @@ namespace FYPBackEnd.Controllers
                 }
 
                 var resp = await userService.Login(model);
-                if (resp.Message == Status.Successful.ToString())
+                if (resp.StatusCode == Status.Successful.ToString())
                 {
                     return Ok(resp);
                 }
@@ -109,7 +110,7 @@ namespace FYPBackEnd.Controllers
                 }
 
                 var resp = await userService.DeActivateUser(email);
-                if (resp.Message == Status.Successful.ToString())
+                if (resp.StatusCode == Status.Successful.ToString())
                 {
                     return Ok(resp);
                 }
@@ -127,8 +128,11 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("api/v1/Users")]
+        
+        
         public async Task<IActionResult> GetAllUser()
         {
             try
@@ -142,7 +146,7 @@ namespace FYPBackEnd.Controllers
                 }
 
                 var resp = await userService.GetUsers();
-                if (resp.Message == Status.Successful.ToString())
+                if (resp.StatusCode == Status.Successful.ToString())
                 {
                     return Ok(resp);
                 }
@@ -160,7 +164,7 @@ namespace FYPBackEnd.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet]
         [Route("api/v1/GetUser")]
         public async Task<IActionResult> GetUser(string email)
@@ -176,7 +180,7 @@ namespace FYPBackEnd.Controllers
                 }
 
                 var resp = await userService.GetUser(email);
-                if (resp.Message == Status.Successful.ToString())
+                if (resp.StatusCode == Status.Successful.ToString())
                 {
                     return Ok(resp);
                 }

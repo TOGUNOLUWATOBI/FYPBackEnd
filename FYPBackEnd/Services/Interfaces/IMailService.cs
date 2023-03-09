@@ -9,6 +9,6 @@ namespace FYPBackEnd.Services.Interfaces
     public interface IMailService
     {
         Task<ApiResponse> SendGenericEmailAsync(MailRequestModel model);
-        Task<ApiResponse> SendVerificationEmailAsync(ApplicationUser user);
+        Task<ApiResponse> SendVerificationEmailAsync(ApplicationUser user,string otpPurpose);
     }
 }
