@@ -144,7 +144,7 @@ namespace FYPBackEnd
 
 //            app.UseAuthentication();
 
-  //          app.UseAuthorization();
+//            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
