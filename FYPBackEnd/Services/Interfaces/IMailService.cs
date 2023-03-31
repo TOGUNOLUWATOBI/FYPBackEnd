@@ -10,5 +10,6 @@ namespace FYPBackEnd.Services.Interfaces
     {
         Task<ApiResponse> SendGenericEmailAsync(MailRequestModel model);
         Task<ApiResponse> SendVerificationEmailAsync(ApplicationUser user,string otpPurpose);
+        Task<ApiResponse> SendForgotPasswordEmailAsync(ApplicationUser user, string otpPurpose);
     }
 }

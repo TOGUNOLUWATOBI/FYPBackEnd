@@ -3,6 +3,7 @@ using FYPBackEnd.Data.ReturnedResponse;
 using System.Text.RegularExpressions;
 using System;
 using FYPBackEnd.Data.Models;
+using FYPBackEnd.Data.Constants;
 
 namespace FYPBackEnd.Core
 {
@@ -70,30 +71,30 @@ namespace FYPBackEnd.Core
 
             if (!specialChar.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain special character", null);
+                return ReturnedResponse.ErrorResponse("Password must contain special character", null, StatusCodes.ModelError);
             }
 
             if (s.Length < 8)
             {
-                return ReturnedResponse.ErrorResponse("Password must be greater than 8 characters", null);
+                return ReturnedResponse.ErrorResponse("Password must be greater than 8 characters", null, StatusCodes.ModelError);
             }
 
             if (!upperCase.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain at least upper case character", null);
+                return ReturnedResponse.ErrorResponse("Password must contain at least upper case character", null, StatusCodes.ModelError);
             }
 
             if (!lowerCase.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain at least lower case character", null);
+                return ReturnedResponse.ErrorResponse("Password must contain at least lower case character", null, StatusCodes.ModelError);
             }
 
             if (!number.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain at least one number", null);
+                return ReturnedResponse.ErrorResponse("Password must contain at least one number", null, StatusCodes.ModelError);
             }
 
-            return ReturnedResponse.SuccessResponse(null, true);
+            return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
         }
 
         public static bool ValidatePin(string s)

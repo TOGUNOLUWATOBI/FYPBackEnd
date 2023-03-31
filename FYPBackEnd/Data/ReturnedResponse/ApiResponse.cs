@@ -8,6 +8,7 @@
 
         public object Data { get; set; }
 
+        public string Status { get; set; }
         public string StatusCode { get; set; }
 
     }
