@@ -9,6 +9,11 @@ namespace FYPBackEnd.Data
     {
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Otp> Otps { get; set; }
+
+        public ApplicationDbContext()
+        {
+
+        }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
            
