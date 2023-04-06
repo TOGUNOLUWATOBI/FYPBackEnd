@@ -142,6 +142,7 @@ namespace FYPBackEnd
 
             app.UseRouting();
 
+            //todo: change this to use authentication and authorization in live
 //            app.UseAuthentication();
 
 //            app.UseAuthorization();

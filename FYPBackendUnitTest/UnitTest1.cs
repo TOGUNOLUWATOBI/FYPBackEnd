@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Data.Models.ViewModel;
 using FYPBackEnd.Core;
+using FYPBackEnd.Data.Enums;
 
 namespace FYPBackendUnitTest
 {
@@ -29,6 +30,7 @@ namespace FYPBackendUnitTest
         private Mock<IMailService> mailService;
         private Mock<IOptions<AppSettings>> _appSettings;
         private Mock<IOtpService> otpService;
+        //private Mock<>
 
         private UserService _service;
 
@@ -61,14 +63,26 @@ namespace FYPBackendUnitTest
             var mapper = mockMapper.CreateMapper();
 
             _appSettings = new Mock<IOptions<AppSettings>>();
+
+            var app = new AppSettings()
+            {
+                JwtLifespan = 5,
+                JwtSecret  = "password1234567890",
+                ValidAudience = "User",
+                ValidIssuer = "Admin"
+            };
+            _appSettings.Setup(a => a.Value).Returns(app);
+
+            
             ApiResponse resp = ReturnedResponse.SuccessResponse(null,null,null);
             mailService.Setup(m => m.SendVerificationEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(resp);
+            
 
             _service = new UserService(_userManager.Object, _context.Object, _signInManager.Object, mapper, mailService.Object, _appSettings.Object);
         }
 
         [Test]
-        public async Task Test1()
+        public async Task SignUp()
         {
             
             SignUpRequestModel model = new SignUpRequestModel()
@@ -83,13 +97,65 @@ namespace FYPBackendUnitTest
                 LGA = "Shomolu",
                 PhoneNumber = "09018866641"
             };
-
-            
-
-            
-
             var response = await _service.CreateUser(model);
             Assert.AreEqual(response.Status, "Successful");
         }
+
+
+        // add a test case for login
+        [Test]
+        public async Task Login()
+        {
+            LoginRequestModel model = new LoginRequestModel()
+            {
+                EmailAddress = "togunoluwatobi@gmail.com",
+                Password = "String@3105"
+            };
+            _userManager.Setup(x=> x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+            _signInManager.Setup(x=> x.PasswordSignInAsync(It.IsAny<ApplicationUser>(),It.IsAny<string>(),false,true)). ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+
+            ////mock appsettings
+            //_appSettings.Setup(m => m.Value.JwtSecret).Returns(It.IsAny<string>());
+            //_appSettings.Setup(m => m.Value.ValidAudience).Returns(It.IsAny<string>());
+            //_appSettings.Setup(m => m.Value.ValidIssuer).Returns(It.IsAny<string>());
+            //_appSettings.Setup(m => m.Value.JwtLifespan).Returns(It.IsAny<int>());
+
+
+            var response = await _service.Login(model);
+            Assert.AreEqual(response.Status, "Successful");
+        }
+
+        //add a testcase for activate user
+        [Test]
+        public async Task PassTestActivateUser()
+        {
+            _userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser()
+            {
+                Status = UserStatus.Inactive.ToString(),
+            });
+
+            var response = await _service.ActivateUser(It.IsAny<string>());
+            Assert.AreEqual(response.Status, "Successful");
+        }
+
+
+
+        [Test]
+        public async Task FailTestActivateUserBlacklisted()
+        {
+            _userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser()
+            {
+                Status = UserStatus.Blacklisted.ToString(),
+            });
+
+            var response = await _service.ActivateUser(It.IsAny<string>());
+            Assert.AreEqual(response.Status, "UnSuccessful");
+        }
+
+
+
+
+
     }
 }
