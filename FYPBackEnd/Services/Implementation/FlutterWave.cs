@@ -76,7 +76,7 @@ namespace FYPBackEnd.Services.Implementation
                 }
             }
 
-            return ReturnedResponse.ErrorResponse("flutterwave vitrual account couldn't be retrieved", response, StatusCodes.ThirdPartyError);
+            return ReturnedResponse.ErrorResponse("flutterwave vitrual account couldn't be retrieved.", response, StatusCodes.ThirdPartyError);
 
         }
 
