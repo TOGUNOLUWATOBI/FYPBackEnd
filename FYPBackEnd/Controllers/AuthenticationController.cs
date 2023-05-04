@@ -268,6 +268,9 @@ namespace FYPBackEnd.Controllers
         }
 
 
+        //todo: change this to the right controller
+
+
         [HttpPost]
         [Route("api/v1/UploadPicture")]
         public async Task<IActionResult> UploadPicture()
