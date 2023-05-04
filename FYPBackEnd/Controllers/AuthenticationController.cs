@@ -18,11 +18,13 @@ namespace FYPBackEnd.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService userService;
+        private readonly IGoogleDrive googleDrive;
         private readonly ILogger<AuthenticationController> log;
 
-        public AuthenticationController(IUserService userService, ILogger<AuthenticationController> log)
+        public AuthenticationController(IUserService userService,IGoogleDrive googleDrive, ILogger<AuthenticationController> log)
         {
             this.userService = userService;
+            this.googleDrive = googleDrive;
             this.log = log;
         }
 
@@ -265,6 +267,39 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("api/v1/UploadPicture")]
+        public async Task<IActionResult> UploadPicture()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+
+                var resp = await googleDrive.UploadFileWithMetaData();
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in resetting password", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.GeneralError));
+            }
+        }
 
         [HttpPost]
         [Route("api/v1/ForgotPassword")]

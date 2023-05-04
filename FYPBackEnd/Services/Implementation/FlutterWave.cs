@@ -6,6 +6,7 @@ using FYPBackEnd.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 using RestSharp;
 using System;
 using System.Threading.Tasks;
@@ -82,8 +83,106 @@ namespace FYPBackEnd.Services.Implementation
 
         public async Task<ApiResponse> InitiateTransfer (InitiateTransferRequestModel model)
         {
-            throw new NotImplementedException();
+            var response = new InitiateTransferResponseModel();
+
+            var initiateTransferUri = string.Concat(settings.BaseUrl, settings.Transfers);
+            var client = new RestClient(initiateTransferUri);
+            var req = new RestRequest(Method.POST);
+
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            req.AddJsonBody(model);
+
+            var resp = await client.ExecuteAsync(req);
+
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<InitiateTransferResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Transfer Initiated", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave transfer initiated", response, StatusCodes.Successful);
+                }
+            }
+
+            return ReturnedResponse.ErrorResponse("flutterwave transfer couldn't be initiated.", response, StatusCodes.ThirdPartyError);
         }
+
+        public async Task<ApiResponse> GetBillCategories ()
+        {
+            var response = new GetBillCategoriesResponseModel();
+            var getBillCategoriesUri = string.Concat(settings.BaseUrl, settings.GetBillCategories);
+            var client = new RestClient(getBillCategoriesUri);
+            var req = new RestRequest(Method.GET);
+
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            var resp = await client.ExecuteAsync(req);
+
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<GetBillCategoriesResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Get VIrtual Account", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave bill categories", response, StatusCodes.Successful);
+                }
+            }
+
+            return ReturnedResponse.ErrorResponse("flutterwave bill categories couldn't be retrieved.", response, StatusCodes.ThirdPartyError);
+        }
+
+        public async Task<ApiResponse> PayBill(PayBillRequestModel model)
+        {
+            var response = new PayBillResponseModel();
+
+            var PayBIllPaymentUri = string.Concat(settings.BaseUrl, settings.PayBill);
+            var req =   new RestRequest(Method.POST);
+            var client = new RestClient(PayBIllPaymentUri);
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            var resp = await client.ExecuteAsync(req);
+
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<PayBillResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Get VIrtual Account", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave bills payment initiated", response, StatusCodes.Successful);
+                }
+            }
+
+            return ReturnedResponse.ErrorResponse("flutterwave bills payment  couldn't be initiated.", response, StatusCodes.ThirdPartyError);
+        }
+
+
+
+        // TODO: properly test this endpoint wasn't working with postman during test.
+        public async Task<ApiResponse> ValidateBillPayment(ValidateBillRequestModel model)
+        {
+            var response = new ValidateBillPaymentResponseModel();
+
+            var validateBillPaymentUri = string.Concat(settings.BaseUrl, settings.ValidateBillPayment,$"/:{model.item_code}/validate");
+            var client = new RestClient(validateBillPaymentUri);
+            var req = new RestRequest(Method.GET);
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            req.AddJsonBody(model);
+            var resp = await client.ExecuteAsync(req);
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<ValidateBillPaymentResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Validate Bill Payment", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave bill payment validated", response, StatusCodes.Successful);
+                }
+            }
+            return ReturnedResponse.ErrorResponse("flutterwave bill payment couldn't be validated", response, StatusCodes.ThirdPartyError);
+            
+        }
+
 
         public async Task<ApiResponse> GetAllBanks()
         {

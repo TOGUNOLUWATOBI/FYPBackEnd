@@ -108,11 +108,18 @@ namespace FYPBackEnd
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<IMailService, MailService>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<IFlutterWave, FlutterWave>();
+            services.AddScoped<IGoogleDrive, GoogleDrive>();
+            services.AddScoped<IOkra, Okra>();
+            services.AddScoped<IAccountService, AccountService>();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
             services.Configure<MailSettings>(Configuration.GetSection(nameof(MailSettings)));
             services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
+            services.Configure<FlutterWaveSettings>(Configuration.GetSection(nameof(FlutterWaveSettings)));
+            services.Configure<OkraSettings>(Configuration.GetSection(nameof(OkraSettings)));
+            services.Configure<UVerifySettings>(Configuration.GetSection(nameof(UVerifySettings)));
 
             services.AddDbContext<ApplicationDbContext>();
 
