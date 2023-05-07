@@ -303,8 +303,8 @@ namespace FYPBackEnd.Controllers
             catch (Exception ex)
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
-                log.LogInformation(string.Concat($"Error occured in resetting password", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.GeneralError));
+                log.LogInformation(string.Concat($"Error occured in uploading picture", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured in uploading picutre: {errMessage}", null, StatusCodes.GeneralError));
             }
         }
 
