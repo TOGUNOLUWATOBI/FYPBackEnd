@@ -100,7 +100,15 @@ namespace FYPBackEnd
                         }
                         }, new string[] { }  }});
             });
+            services.AddCors(options =>
+            {
 
+                options.AddPolicy("AllowAllMethod",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                    });
+            });
 
 
 
@@ -148,6 +156,7 @@ namespace FYPBackEnd
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors("AllowAllMethod");
 
             //todo: change this to use authentication and authorization in live
 //            app.UseAuthentication();
