@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using RestSharp;
 
 namespace FYPBackEnd.Data.Models.RequestModel
 {
     public class UploadImageRequestModel
     {
-        public IFormFile file { get; set; }
+        public HttpFile file { get; set; }
     }
 }
