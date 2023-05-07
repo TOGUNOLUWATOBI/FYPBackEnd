@@ -18,7 +18,7 @@ namespace FYPBackEnd.Controllers
     [ApiController]
     [Route("[controller]")]
     
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : Controller
     {
         private readonly IUserService userService;
         private readonly IGoogleDrive googleDrive;
@@ -288,7 +288,7 @@ namespace FYPBackEnd.Controllers
                                             .Select(e => e.ErrorMessage));
                     return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
                 }
-
+                
                 var resp = await googleDrive.UploadFileWithMetaData(model.file);
                 if (resp.Status == Status.Successful.ToString())
                 {
