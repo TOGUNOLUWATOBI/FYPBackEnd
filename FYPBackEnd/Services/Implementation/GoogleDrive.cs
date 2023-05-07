@@ -6,6 +6,7 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
 using Microsoft.AspNetCore.Http;
+using RestSharp;
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
@@ -21,7 +22,7 @@ namespace FYPBackEnd.Services.Implementation
        // private const string uploadFilenme = "testing";
         private const string serviceAccountEmail = "fypbackend@fypbackend2023.iam.gserviceaccount.com";
         //private const string filePath = @"C:\Users\BEBS\Pictures\passport(2).jpg";
-        public async Task<ApiResponse> UploadFileWithMetaData(IFormFile requestFile)
+        public async Task<ApiResponse> UploadFileWithMetaData(HttpFile requestFile)
         {
             if (requestFile == null)
                 ReturnedResponse.ErrorResponse("the file has a issue being found to be uploaded",null, StatusCodes.GeneralError);
