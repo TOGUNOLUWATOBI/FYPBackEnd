@@ -28,7 +28,7 @@ namespace FYPBackEnd.Services.Implementation
 
                 var certificate = new X509Certificate2(@"key.p12", "notasecret", X509KeyStorageFlags.Exportable);
 
-
+                Console.WriteLine("passed first stage");
                 var credential = new ServiceAccountCredential(
                new ServiceAccountCredential.Initializer(serviceAccountEmail)
                {
@@ -40,22 +40,24 @@ namespace FYPBackEnd.Services.Implementation
                     HttpClientInitializer = credential,
                     ApplicationName = "FYPBackEnd",
                 });
-
+                Console.WriteLine("passed 2 stage");
                 var fileMetaData = new Google.Apis.Drive.v3.Data.File()
                 {
                     Name = requestFile.FileName,
                     MimeType = "image/jpeg",
                     Parents = new[] { DirectoryId }
                 };
+                Console.WriteLine("passed 3 stage");
 
-                
                 // Create a new file on drive.
                 await using (var stream = requestFile.OpenReadStream())
                 {
                     // Create a new file, with metadata and stream.
                     var request = service.Files.Create(fileMetaData, stream, "image/jpeg");
+
+                    Console.WriteLine("passed 4 stage");
                     //request.Fields = "id";
-                     var result = await request.UploadAsync(CancellationToken.None);
+                    var result = await request.UploadAsync(CancellationToken.None);
 
                     if(result.Status == UploadStatus.Failed)
                     {
