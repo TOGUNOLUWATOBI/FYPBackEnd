@@ -23,6 +23,8 @@ namespace FYPBackEnd.Services.Implementation
         //private const string filePath = @"C:\Users\BEBS\Pictures\passport(2).jpg";
         public async Task<ApiResponse> UploadFileWithMetaData(IFormFile requestFile)
         {
+            if (requestFile == null)
+                ReturnedResponse.ErrorResponse("the file has a issue being found to be uploaded",null, StatusCodes.GeneralError);
             try
             {
 
