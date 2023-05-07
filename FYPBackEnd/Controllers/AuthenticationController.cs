@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System;
 using FYPBackEnd.Data.Models.RequestModel;
 using FYPBackEnd.Data.Constants;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using StatusCodes = FYPBackEnd.Data.Constants.StatusCodes;
 
 namespace FYPBackEnd.Controllers
 {
@@ -269,11 +272,12 @@ namespace FYPBackEnd.Controllers
 
 
         //todo: change this to the right controller
+        //todo: decrypt jwt passed soa s to know the user name/id topass to save the picture
 
 
         [HttpPost]
         [Route("api/v1/UploadPicture")]
-        public async Task<IActionResult> UploadPicture()
+        public async Task<IActionResult> UploadPicture([FromForm] UploadImageRequestModel model)
         {
             try
             {
@@ -285,7 +289,7 @@ namespace FYPBackEnd.Controllers
                     return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
                 }
 
-                var resp = await googleDrive.UploadFileWithMetaData();
+                var resp = await googleDrive.UploadFileWithMetaData(model.File);
                 if (resp.Status == Status.Successful.ToString())
                 {
                     return Ok(resp);

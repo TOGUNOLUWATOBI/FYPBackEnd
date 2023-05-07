@@ -5,26 +5,28 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using StatusCodes = FYPBackEnd.Data.Constants.StatusCodes;
 
 namespace FYPBackEnd.Services.Implementation
 {
     public class GoogleDrive: IGoogleDrive
     {
         private const string DirectoryId = "1cmBb_P3uOK5C17yplAhtJJRXIzKA8o75";
-        private const string uploadFilenme = "testing";
+       // private const string uploadFilenme = "testing";
         private const string serviceAccountEmail = "fypbackend@fypbackend2023.iam.gserviceaccount.com";
-        private const string filePath = @"C:\Users\BEBS\Pictures\passport(2).jpg";
-        public async Task<ApiResponse> UploadFileWithMetaData()
+        //private const string filePath = @"C:\Users\BEBS\Pictures\passport(2).jpg";
+        public async Task<ApiResponse> UploadFileWithMetaData(IFormFile requestFile)
         {
             try
             {
 
-                var certificate = new X509Certificate2(@"C:\Users\BEBS\source\repos\FYPBackEnd\FYPBackEnd\key.p12", "notasecret", X509KeyStorageFlags.Exportable);
+                var certificate = new X509Certificate2(@"key.p12", "notasecret", X509KeyStorageFlags.Exportable);
 
 
                 var credential = new ServiceAccountCredential(
@@ -41,15 +43,14 @@ namespace FYPBackEnd.Services.Implementation
 
                 var fileMetaData = new Google.Apis.Drive.v3.Data.File()
                 {
-                    Name = uploadFilenme,
+                    Name = requestFile.FileName,
                     MimeType = "image/jpeg",
                     Parents = new[] { DirectoryId }
                 };
 
                 
                 // Create a new file on drive.
-                await using (var stream = new FileStream(filePath,
-                           FileMode.Open,FileAccess.Read))
+                await using (var stream = requestFile.OpenReadStream())
                 {
                     // Create a new file, with metadata and stream.
                     var request = service.Files.Create(fileMetaData, stream, "image/jpeg");
