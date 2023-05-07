@@ -289,7 +289,7 @@ namespace FYPBackEnd.Controllers
                     return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
                 }
 
-                var resp = await googleDrive.UploadFileWithMetaData(model.File);
+                var resp = await googleDrive.UploadFileWithMetaData(model.file);
                 if (resp.Status == Status.Successful.ToString())
                 {
                     return Ok(resp);
