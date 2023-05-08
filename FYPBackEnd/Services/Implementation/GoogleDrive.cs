@@ -45,7 +45,7 @@ namespace FYPBackEnd.Services.Implementation
                 Console.WriteLine("passed 2 stage");
                 var fileMetaData = new Google.Apis.Drive.v3.Data.File()
                 {
-                    Name = requestFile.FileName,
+                    Name = "bebs",
                     MimeType = "image/jpeg",
                     Parents = new[] { DirectoryId }
                 };
