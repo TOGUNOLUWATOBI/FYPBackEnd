@@ -30,13 +30,13 @@ namespace FYPBackEnd.Services.Implementation
 
                 var certificate = new X509Certificate2(@"key.p12", "notasecret", X509KeyStorageFlags.Exportable);
 
-                return ReturnedResponse.SuccessResponse("success in file", null, StatusCodes.Successful);
+                
                 var credential = new ServiceAccountCredential(
                new ServiceAccountCredential.Initializer(serviceAccountEmail)
                {
                    Scopes = new[] { DriveService.Scope.Drive , DriveService.Scope.DriveFile, DriveService.Scope.DriveAppdata}
                }.FromCertificate(certificate));
-
+                return ReturnedResponse.SuccessResponse("success in file", null, StatusCodes.Successful);
                 var service = new DriveService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = credential,
