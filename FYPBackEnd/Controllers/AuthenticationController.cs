@@ -311,7 +311,7 @@ namespace FYPBackEnd.Controllers
                     return Ok("success");
                 }
 
-                var resp = await googleDrive.UploadFileWithMetaData(HttpContext.Request.Form.Files[0]);
+                var resp = await googleDrive.UploadFileWithMetaData(model.file);
                 if (resp.Status == Status.Successful.ToString())
                 {
                     return Ok(resp);

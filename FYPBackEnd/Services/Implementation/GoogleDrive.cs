@@ -30,7 +30,7 @@ namespace FYPBackEnd.Services.Implementation
 
                 var certificate = new X509Certificate2(@"key.p12", "notasecret", X509KeyStorageFlags.Exportable);
 
-                Console.WriteLine("passed first stage");
+                return ReturnedResponse.SuccessResponse("success", null, StatusCodes.Successful);
                 var credential = new ServiceAccountCredential(
                new ServiceAccountCredential.Initializer(serviceAccountEmail)
                {
