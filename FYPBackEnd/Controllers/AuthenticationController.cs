@@ -292,7 +292,7 @@ namespace FYPBackEnd.Controllers
                 if(model == null)
                     return BadRequest(ReturnedResponse.ErrorResponse("no file was uploaded", null, StatusCodes.ModelError));
 
-                var resp = await googleDrive.UploadFileWithMetaData(model.file);
+                var resp = await googleDrive.UploadFileWithMetaData(HttpContext.Request.Form.Files[0]);
                 if (resp.Status == Status.Successful.ToString())
                 {
                     return Ok(resp);
