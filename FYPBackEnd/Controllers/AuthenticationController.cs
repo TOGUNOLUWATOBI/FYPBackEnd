@@ -12,6 +12,7 @@ using FYPBackEnd.Data.Constants;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using StatusCodes = FYPBackEnd.Data.Constants.StatusCodes;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FYPBackEnd.Controllers
 {
@@ -22,13 +23,15 @@ namespace FYPBackEnd.Controllers
     {
         private readonly IUserService userService;
         private readonly IGoogleDrive googleDrive;
+        public static IWebHostEnvironment _environment;
         private readonly ILogger<AuthenticationController> log;
 
-        public AuthenticationController(IUserService userService,IGoogleDrive googleDrive, ILogger<AuthenticationController> log)
+        public AuthenticationController(IUserService userService,IGoogleDrive googleDrive, ILogger<AuthenticationController> log, IWebHostEnvironment environment)
         {
             this.userService = userService;
             this.googleDrive = googleDrive;
             this.log = log;
+            _environment = environment;
         }
 
         [AllowAnonymous]
@@ -291,6 +294,22 @@ namespace FYPBackEnd.Controllers
                 
                 if(model == null)
                     return BadRequest(ReturnedResponse.ErrorResponse("no file was uploaded", null, StatusCodes.ModelError));
+
+                if (model.file.Length > 0)
+                {
+                    //if (!Directory.Exists(_environment.WebRootPath + "\\Upload"))
+                    //{
+                    //    Directory.CreateDirectory(_environment.WebRootPath + "\\Upload\\");
+                    //}
+                    //using (FileStream filestream = System.IO.File.Create(_environment.WebRootPath + "\\Upload\\" + model.file.FileName))
+                    //{
+                    //    model.file.CopyTo(filestream);
+                    //    filestream.Flush();
+                    //    //  return "\\Upload\\" + objFile.files.FileName;
+                    //}
+
+                    return Ok("success");
+                }
 
                 var resp = await googleDrive.UploadFileWithMetaData(HttpContext.Request.Form.Files[0]);
                 if (resp.Status == Status.Successful.ToString())
