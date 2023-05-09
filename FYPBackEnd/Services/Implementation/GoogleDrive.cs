@@ -36,7 +36,7 @@ namespace FYPBackEnd.Services.Implementation
                {
                    Scopes = new[] { DriveService.Scope.Drive , DriveService.Scope.DriveFile, DriveService.Scope.DriveAppdata}
                }.FromCertificate(certificate));
-                return ReturnedResponse.SuccessResponse("success in file", null, StatusCodes.Successful);
+               
                 var service = new DriveService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = credential,
