@@ -74,7 +74,7 @@ namespace FYPBackEnd.Services.Implementation
             catch (SmtpException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return ReturnedResponse.ErrorResponse("Couldn't send email", null,null);
+                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,null);
             }
             
         }
@@ -150,7 +150,7 @@ namespace FYPBackEnd.Services.Implementation
             catch (SmtpException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return ReturnedResponse.ErrorResponse("Couldn't send email", null,null);
+                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,null);
             }
 
             //var email = new MimeMessage();
@@ -245,7 +245,7 @@ namespace FYPBackEnd.Services.Implementation
             catch (SmtpException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return ReturnedResponse.ErrorResponse("Couldn't send email", null,null);
+                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,null);
             }
 
             //var email = new MimeMessage();
