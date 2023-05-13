@@ -10,5 +10,6 @@
         public const string BlacklistedUser = "B06";
         public const string ModelError = "B98";
         public const string ThirdPartyError = "B97";        
+        public const string ExceptionError = "B96";        
     }
 }

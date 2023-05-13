@@ -6,7 +6,7 @@ using FYPBackEnd.Data.Models.RequestModel;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
 using FYPBackEnd.Settings;
-
+using FYPBackEnd.Data.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -69,12 +69,12 @@ namespace FYPBackEnd.Services.Implementation
             try
             {
                 client.Send(message);
-                return ReturnedResponse.SuccessResponse("Email sent", null,null);
+                return ReturnedResponse.SuccessResponse("Email sent", null,StatusCodes.Successful);
             }
             catch (SmtpException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,null);
+                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,StatusCodes.ExceptionError);
             }
             
         }
@@ -145,12 +145,12 @@ namespace FYPBackEnd.Services.Implementation
             try
             {
                 client.Send(message);
-                return ReturnedResponse.SuccessResponse("Email sent", null,null);
+                return ReturnedResponse.SuccessResponse("Email sent", null,StatusCodes.Successful);
             }
             catch (SmtpException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,null);
+                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,StatusCodes.ExceptionError);
             }
 
             //var email = new MimeMessage();
@@ -240,12 +240,12 @@ namespace FYPBackEnd.Services.Implementation
             try
             {
                 client.Send(message);
-                return ReturnedResponse.SuccessResponse("Email sent", null,null);
+                return ReturnedResponse.SuccessResponse("Email sent", null,StatusCodes.Successful);
             }
             catch (SmtpException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,null);
+                return ReturnedResponse.ErrorResponse($"Couldn't send email: {ex.Message}", null,StatusCodes.ExceptionError);
             }
 
             //var email = new MimeMessage();

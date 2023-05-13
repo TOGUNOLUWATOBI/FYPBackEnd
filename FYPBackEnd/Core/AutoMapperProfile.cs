@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FYPBackEnd.Data.Entities;
+using FYPBackEnd.Data.Models.DTO;
 using FYPBackEnd.Data.Models.ViewModel;
 
 namespace FYPBackEnd.Core
@@ -9,6 +10,7 @@ namespace FYPBackEnd.Core
         public AutoMapperProfile() 
         {
             CreateMap<ApplicationUser, UserDto>();
+            CreateMap<Account, AccountDto>();
         }
     }
 }

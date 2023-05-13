@@ -64,7 +64,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat("Error occured in the SignUp", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -99,7 +99,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat("Error occured in the Login", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -133,7 +133,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in the Deactivation of user with email: {email}", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -169,7 +169,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in retrieving all users", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -203,7 +203,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in the getting user ", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -236,7 +236,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in verifying otp ", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in verifying otp", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in verifying otp", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -269,7 +269,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in resetting password", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -326,7 +326,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in uploading picture", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured in uploading picutre: {errMessage}", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured in uploading picutre: {errMessage}", null, StatusCodes.ExceptionError));
             }
         }
 
@@ -359,7 +359,7 @@ namespace FYPBackEnd.Controllers
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in resetting password", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.GeneralError));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.ExceptionError));
             }
         }
     }

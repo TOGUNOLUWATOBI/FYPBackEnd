@@ -49,7 +49,92 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             return ReturnedResponse.ErrorResponse("flutterwave vitrual account couldn't be created", response, StatusCodes.ThirdPartyError);
+        }
 
+        public async Task<ApiResponse> CreatePayoutSubaccount(CreatePaymentSubaccountRequestModel model)
+        {
+            string createPaymentSubaccountUri = string.Concat(settings.BaseUrl, settings.VirtualAccount);
+
+            var response = new CreatePaymentSubaccountResponseModel();
+            var client = new RestClient(createPaymentSubaccountUri);
+            var req = new RestRequest(Method.POST);
+
+            model.bank_code = "232";
+            model.country = "NGN";
+
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            req.AddJsonBody(model);
+
+            var resp = await client.ExecuteAsync(req);
+
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<CreatePaymentSubaccountResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Create Payment Subaccount", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave Payment Subaccount created", response, StatusCodes.Successful);
+                }
+            }
+            return ReturnedResponse.ErrorResponse("flutterwave Payment Subaccount couldn't be created", response, StatusCodes.ThirdPartyError);
+        }
+
+
+        public async Task<ApiResponse> GetPaymentSubaccountBalance(string thirdpartyReference)
+        {
+            if (string.IsNullOrEmpty(thirdpartyReference))
+                return ReturnedResponse.ErrorResponse("thirdpartyReference Can't be null or empty", null, StatusCodes.GeneralError);
+
+            var response = new GetVirtualAccountResponseModel();
+            string getPaymentSubaccountBalanceUri = string.Concat(settings.BaseUrl, settings.PaymentSubaccount, "/", thirdpartyReference,"/","balances");
+
+            var client = new RestClient(getPaymentSubaccountBalanceUri);
+            var req = new RestRequest(Method.GET);
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+
+            var resp = await client.ExecuteAsync(req);
+
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<GetVirtualAccountResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Get VIrtual Account", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave payment subaccount balance", response, StatusCodes.Successful);
+                }
+            }
+
+            return ReturnedResponse.ErrorResponse("flutterwave vitrual account couldn't be retrieved.", response, StatusCodes.ThirdPartyError);
+        }
+
+        public async Task<ApiResponse> GetPaymentSubaccount(string thirdpartyReference)
+        {
+            if (string.IsNullOrEmpty(thirdpartyReference))
+                return ReturnedResponse.ErrorResponse("thirdpartyReference Can't be null or empty", null, StatusCodes.GeneralError);
+
+            var response = new GetVirtualAccountResponseModel();
+            string getPaymentSubaccountUri = string.Concat(settings.BaseUrl, settings.PaymentSubaccount, "/", thirdpartyReference);
+
+            var client = new RestClient(getPaymentSubaccountUri);
+            var req = new RestRequest(Method.GET);
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+
+            var resp = await client.ExecuteAsync(req);
+
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<GetVirtualAccountResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Get VIrtual Account", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave payment subaccount balance", response, StatusCodes.Successful);
+                }
+            }
+
+            return ReturnedResponse.ErrorResponse("flutterwave vitrual account couldn't be retrieved.", response, StatusCodes.ThirdPartyError);
         }
 
         public async Task<ApiResponse> GetVirtualStaticAccount (string orderRef)

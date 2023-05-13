@@ -28,7 +28,7 @@ namespace FYPBackEnd.Services.Implementation
             try
             {
 
-                var certificate = new X509Certificate2(@"key.p12", "notasecret", X509KeyStorageFlags.Exportable);
+                var certificate = new X509Certificate2("key.p12", "notasecret", X509KeyStorageFlags.Exportable);
 
                 
                 var credential = new ServiceAccountCredential(
@@ -73,7 +73,7 @@ namespace FYPBackEnd.Services.Implementation
             }
             catch(Exception ex)
             {
-                return ReturnedResponse.ErrorResponse(ex.Message, ex.InnerException.ToString(), StatusCodes.GeneralError);
+                return ReturnedResponse.ErrorResponse(ex.Message, ex.InnerException.ToString(), StatusCodes.ExceptionError);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Globalization;
 
 namespace FYPBackEnd.Data.Entities
@@ -12,9 +13,11 @@ namespace FYPBackEnd.Data.Entities
         public string Lga { get; set; }
         public string State { get; set; }
         public string Gender { get; set; }
-
         public string Status { get; set; }
 
         public bool IsKYCComplete { get; set; }
+        public DateTime? CreationDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
+        public Account Account { get; set; }
     }
 }

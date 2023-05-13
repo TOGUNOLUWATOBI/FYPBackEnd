@@ -4,6 +4,7 @@
     {
         public string BaseUrl { get; set; }
         public string VirtualAccount { get; set; }
+        public string PaymentSubaccount { get; set; }
         public string GetBanks { get; set; }
         public string SecretKey { get; set; }
         public string GetBillCategories { get; set; }

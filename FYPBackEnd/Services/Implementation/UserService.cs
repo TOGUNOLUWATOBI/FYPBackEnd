@@ -55,6 +55,7 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             user.Status = UserStatus.Active.ToString();
+            user.LastModifiedDate = DateTime.Now; 
             user.EmailConfirmed = true;
             context.Update(user);
             await context.SaveChangesAsync();
@@ -88,6 +89,8 @@ namespace FYPBackEnd.Services.Implementation
             user.Status = UserStatus.Inactive.ToString();
             user.Gender = model.Gender;
             user.IsKYCComplete = false;
+            user.LastModifiedDate = DateTime.Now;
+            user.CreationDate = DateTime.Now;
             
             resp = await mailService.SendVerificationEmailAsync(user, OtpPurpose.UserVerification.ToString());
 
@@ -109,6 +112,7 @@ namespace FYPBackEnd.Services.Implementation
             if (user.Status == UserStatus.Blacklisted.ToString())
                 return ReturnedResponse.ErrorResponse("Can't deactivate user as user is blacklisted", null, StatusCodes.BlacklistedUser);
             user.Status = UserStatus.Inactive.ToString();
+            user.LastModifiedDate = DateTime.Now;
             context.Update(user);
             await context.SaveChangesAsync();
 
@@ -208,6 +212,8 @@ namespace FYPBackEnd.Services.Implementation
             }
         }
 
+
+        //todo: check if this service is working
         public async Task<ApiResponse> ResetPassword(ChangePasswordRequestModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);

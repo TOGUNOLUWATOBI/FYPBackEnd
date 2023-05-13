@@ -97,6 +97,7 @@ namespace FYPBackEnd.Core
             return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
         }
 
+       
         public static bool ValidatePin(string s)
         {
             for (int i = 1; i < s.Length; i++)

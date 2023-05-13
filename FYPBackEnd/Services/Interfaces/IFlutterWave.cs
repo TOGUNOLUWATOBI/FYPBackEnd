@@ -14,6 +14,8 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> ValidateBillPayment(ValidateBillRequestModel model);
         Task<ApiResponse> GetAllBanks();
         Task<ApiResponse> AccountNameVerification(AccountNameVerificationModel model);
-
+        Task<ApiResponse> CreatePayoutSubaccount(CreatePaymentSubaccountRequestModel model);
+        Task<ApiResponse> GetPaymentSubaccountBalance(string thirdpartyReference);
+        Task<ApiResponse> GetPaymentSubaccount(string thirdpartyReference);
     }
 }

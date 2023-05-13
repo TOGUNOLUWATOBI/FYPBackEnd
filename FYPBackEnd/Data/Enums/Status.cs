@@ -14,6 +14,12 @@
         UnSuccessful
     }
 
+    public enum AccountStatus
+    {
+        PND,
+        Active
+    }
+
     public enum UserStatus
     {
         Active,
