@@ -28,7 +28,7 @@ namespace FYPBackEnd.Services.Implementation
             try
             {
 
-                var certificate = new X509Certificate2("key.p12", "notasecret", X509KeyStorageFlags.Exportable);
+                var certificate = new X509Certificate2("key.p12", "notasecret", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
 
                 
                 var credential = new ServiceAccountCredential(

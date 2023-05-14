@@ -10,9 +10,6 @@
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="key.p12" />
-	</ItemGroup>
-	<ItemGroup>
 	  <Content Include="key.p12">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
