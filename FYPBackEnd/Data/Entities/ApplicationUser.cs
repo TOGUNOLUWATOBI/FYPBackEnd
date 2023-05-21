@@ -18,6 +18,5 @@ namespace FYPBackEnd.Data.Entities
         public bool IsKYCComplete { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
-        public Account Account { get; set; }
     }
 }

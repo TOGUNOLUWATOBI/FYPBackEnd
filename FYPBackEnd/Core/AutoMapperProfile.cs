@@ -5,12 +5,13 @@ using FYPBackEnd.Data.Models.ViewModel;
 
 namespace FYPBackEnd.Core
 {
-    public class AutoMapperProfile :Profile
+    public class AutoMapperProfile : Profile
     {
-        public AutoMapperProfile() 
+        public AutoMapperProfile()
         {
             CreateMap<ApplicationUser, UserDto>();
             CreateMap<Account, AccountDto>();
+            CreateMap<Transaction, TransactionDto>();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace FYPBackEnd.Data
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Otp> Otps { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
 
         public ApplicationDbContext()
         {
@@ -18,15 +19,8 @@ namespace FYPBackEnd.Data
         }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-           
+
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<ApplicationUser>()
-                .HasOne(c => c.Account)
-                .WithOne(a => a.User)
-                .HasForeignKey<Account>(a => a.id);
-        }
     }
 }

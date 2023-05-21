@@ -17,6 +17,7 @@ namespace FYPBackEnd.Data.Models.FlutterWave
         public string Reference { get; set; }
         public string Callback_url { get; set; }
         public string Debit_currency { get; set; }
+        public string Debit_subaccount { get; set; }
     }
 
     public class InitiateTransferResponseModel

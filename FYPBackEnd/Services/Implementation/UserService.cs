@@ -47,7 +47,7 @@ namespace FYPBackEnd.Services.Implementation
             if (user == null)
             {
                 return ReturnedResponse.ErrorResponse("User not found", null, StatusCodes.NoRecordFound);
-                
+
             }
             if (user.Status == UserStatus.Blacklisted.ToString())
             {
@@ -55,13 +55,13 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             user.Status = UserStatus.Active.ToString();
-            user.LastModifiedDate = DateTime.Now; 
+            user.LastModifiedDate = DateTime.Now;
             user.EmailConfirmed = true;
             context.Update(user);
             await context.SaveChangesAsync();
 
             return ReturnedResponse.SuccessResponse("User successfully activated", null, StatusCodes.Successful);
-            
+
         }
 
         public async Task<ApiResponse> CreateUser(SignUpRequestModel model)
@@ -72,7 +72,7 @@ namespace FYPBackEnd.Services.Implementation
                 return ReturnedResponse.ErrorResponse("User with this email already exists", null, StatusCodes.RecordExist);
 
             var resp = Core.Utility.ValidatePassword(model.Password);
-            if(resp.Status == Status.UnSuccessful.ToString())
+            if (resp.Status == Status.UnSuccessful.ToString())
             {
                 return resp;
             }
@@ -91,14 +91,14 @@ namespace FYPBackEnd.Services.Implementation
             user.IsKYCComplete = false;
             user.LastModifiedDate = DateTime.Now;
             user.CreationDate = DateTime.Now;
-            
+
             resp = await mailService.SendVerificationEmailAsync(user, OtpPurpose.UserVerification.ToString());
 
             if (resp.Status == Status.UnSuccessful.ToString())
                 return resp;
 
 
-            var x = await _userManager.CreateAsync(user,model.Password);
+            var x = await _userManager.CreateAsync(user, model.Password);
             var userDto = map.Map<UserDto>(user);
             return ReturnedResponse.SuccessResponse("User successfuly registered", userDto, StatusCodes.Successful);
         }
@@ -119,7 +119,7 @@ namespace FYPBackEnd.Services.Implementation
             return ReturnedResponse.SuccessResponse("User successfully deactivated", null, StatusCodes.Successful);
         }
 
-        
+
 
         public async Task<ApiResponse> GetUser(string email)
         {
@@ -140,7 +140,7 @@ namespace FYPBackEnd.Services.Implementation
 
         public async Task<ApiResponse> Login(LoginRequestModel model)
         {
-            
+
             if (string.IsNullOrEmpty(model.EmailAddress))
                 return ReturnedResponse.ErrorResponse("User Email can't be null or empty", null, StatusCodes.ModelError);
             var user = await _userManager.FindByEmailAsync(model.EmailAddress);
@@ -152,15 +152,15 @@ namespace FYPBackEnd.Services.Implementation
 
                 if (isValid.Succeeded)
                 {
-                    
-                    
-                    if(user.Status == UserStatus.Inactive.ToString() && user.EmailConfirmed == false)
+
+
+                    if (user.Status == UserStatus.Inactive.ToString() && user.EmailConfirmed == false)
                     {
                         _ = await mailService.SendVerificationEmailAsync(user, OtpPurpose.UserVerification.ToString());
-                        return ReturnedResponse.SuccessResponse("Your account has not been verified, check your email to verify your account",null, StatusCodes.UnverifedUser);
-                        
+                        return ReturnedResponse.SuccessResponse("Your account has not been verified, check your email to verify your account", null, StatusCodes.UnverifedUser);
+
                     }
-                    
+
 
 
                     var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
@@ -168,7 +168,7 @@ namespace FYPBackEnd.Services.Implementation
                     var token = new JwtSecurityToken(
                         issuer: _appSettings.ValidIssuer,
                         audience: _appSettings.ValidAudience,
-                        expires: DateTime.Now.AddHours(_appSettings.JwtLifespan), 
+                        expires: DateTime.Now.AddHours(_appSettings.JwtLifespan),
                         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                         );
 
@@ -181,10 +181,10 @@ namespace FYPBackEnd.Services.Implementation
                         Email = model.EmailAddress,
                         ExpiresIn = DateTime.Now.AddHours(_appSettings.JwtLifespan)
                     };
-                   
-                    
+
+
                     return ReturnedResponse.SuccessResponse("User Successfully logged in", loginResponseModel, StatusCodes.Successful);
-                    
+
                 }
 
             }
@@ -193,14 +193,14 @@ namespace FYPBackEnd.Services.Implementation
 
         }
 
-        public async Task<ApiResponse> ForgotPasswordRequest (string email)
+        public async Task<ApiResponse> ForgotPasswordRequest(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
             {
                 return ReturnedResponse.ErrorResponse("User with this email not found", null, StatusCodes.NoRecordFound);
-                
+
             }
             else
             {
@@ -219,7 +219,7 @@ namespace FYPBackEnd.Services.Implementation
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return ReturnedResponse.ErrorResponse("No Recond found",null, StatusCodes.NoRecordFound);
+                return ReturnedResponse.ErrorResponse("No Recond found", null, StatusCodes.NoRecordFound);
             }
 
             var resp = Core.Utility.ValidatePassword(model.Password);
@@ -231,25 +231,25 @@ namespace FYPBackEnd.Services.Implementation
             await _userManager.RemovePasswordAsync(user);
             await _userManager.ChangePasswordAsync(user, null, model.Password);
 
-            return ReturnedResponse.SuccessResponse("Password has been reset", null,StatusCodes.Successful);
+            return ReturnedResponse.SuccessResponse("Password has been reset", null, StatusCodes.Successful);
         }
 
         public async Task<ApiResponse> VerifyOtp(string otpCode)
         {
-            var otp = await context.Otps.FirstOrDefaultAsync(x=> x.OtpCode== otpCode);
+            var otp = await context.Otps.FirstOrDefaultAsync(x => x.OtpCode == otpCode);
 
             if (otp == null)
-            { 
+            {
                 return ReturnedResponse.ErrorResponse("Invalid otp, input correct otp code", null, StatusCodes.GeneralError);
-                
+
             }
 
             if (otp.ExpiryDate < DateTime.Now)
             {
                 return ReturnedResponse.ErrorResponse("Otp has expired", null, StatusCodes.GeneralError);
-                
+
             }
-            if(otp.Purpose == OtpPurpose.UserVerification.ToString())
+            if (otp.Purpose == OtpPurpose.UserVerification.ToString())
             {
                 var user = await _userManager.FindByEmailAsync(otp.Email);
                 if (user == null)
@@ -260,7 +260,7 @@ namespace FYPBackEnd.Services.Implementation
                 return await ActivateUser(user.Email);
             }
 
-            else if(otp.Purpose == OtpPurpose.PasswordReset.ToString())
+            else if (otp.Purpose == OtpPurpose.PasswordReset.ToString())
             {
                 var user = await _userManager.FindByEmailAsync(otp.Email);
                 if (user == null)
@@ -269,7 +269,7 @@ namespace FYPBackEnd.Services.Implementation
                 }
 
                 return ReturnedResponse.SuccessResponse("User password reseted", null, StatusCodes.Successful);
-                
+
 
             }
 
