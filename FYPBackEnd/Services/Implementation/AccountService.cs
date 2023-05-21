@@ -182,7 +182,7 @@ namespace FYPBackEnd.Services.Implementation
                 {
                     Debit_currency = "NGN",
                     Debit_subaccount = account.ThirdPartyReference,
-                    Account_bank = model.BeneficiaryBank,
+                    Account_bank = model.BeneficiaryBankCode,
                     Account_number = model.BeneficiaryAccountNumber,
                     Amount = model.Amount,
                     Currency = "NGN",
@@ -278,43 +278,69 @@ namespace FYPBackEnd.Services.Implementation
 
                 account.Balance = account.Balance - model.TrxAmount;
 
+                //updated logic
+                // perform transfer to flutterwave pool account and then after successful transfer to the right user
+                //todo: ask ekundayo if i should log this as a transaction time no dey sha
 
-                // call flutterwave to process the transaction
-                var flutterTransfer = await flutterWave.PayBill(new PayBillRequestModel()
+                var flutterTransfer = await flutterWave.InitiateTransfer(new InitiateTransferRequestModel()
                 {
-                    amount = model.Amount,
-                    country = "NG",
-                    recurrence = "ONCE",
-                    reference = reference,
-                    customer = model.Customer,
-                    type = model.Type,
-                    
+                    Debit_currency = "NGN",
+                    Debit_subaccount = account.ThirdPartyReference,
+                    Account_bank = "035",
+                    Account_number = "8540683210",
+                    Amount = model.Amount,
+                    Currency = "NGN",
+                    Narration = $"Internal Transfer for AirtimeData for : {model.Customer}",
+                    Reference = reference
                 });
 
-
+                Object obj = null;
                 //check the response 
                 if (flutterTransfer != null)
                 {
                     if (flutterTransfer.Status == Status.Successful.ToString())
                     {
-                        var resp = (PayBillResponseModel)flutterTransfer.Data;
-
-                        transaction.Status = TransactionStatus.Successful.ToString();
-                        transaction.LastModifiedDate = DateTime.Now;
 
 
-                        context.Update(transaction);
-                        await context.SaveChangesAsync();
+                        // call flutterwave to process the transaction
+                        var flutterAirtimeData = await flutterWave.PayBill(new PayBillRequestModel()
+                        {
+                            amount = Convert.ToInt32(model.TrxAmount),
+                            country = "NG",
+                            recurrence = "ONCE",
+                            reference = reference,
+                            customer = model.Customer,
+                            type = model.Type,
 
-                        var transactionDto = map.Map<TransactionDto>(transaction);
+                        });
 
-                        transactionDto.PhoneNumber = model.Customer;
+                        obj = flutterAirtimeData;
 
-                        return ReturnedResponse.SuccessResponse("AirtimData Successfully bought", transactionDto, StatusCodes.Successful);
+                        //check the response 
+                        if (flutterAirtimeData != null)
+                        {
+                            if (flutterAirtimeData.Status == Status.Successful.ToString())
+                            {
+                                var resp = (PayBillResponseModel)flutterAirtimeData.Data;
+
+                                transaction.Status = TransactionStatus.Successful.ToString();
+                                transaction.LastModifiedDate = DateTime.Now;
+
+
+                                context.Update(transaction);
+                                await context.SaveChangesAsync();
+
+                                var transactionDto = map.Map<TransactionDto>(transaction);
+
+                                transactionDto.PhoneNumber = model.Customer;
+
+                                return ReturnedResponse.SuccessResponse("AirtimData Successfully bought", transactionDto, StatusCodes.Successful);
+                            }
+                        }
                     }
                 }
 
-                return ReturnedResponse.ErrorResponse("An error occured while buying AirtimeData", flutterTransfer.Data, StatusCodes.GeneralError);
+                return ReturnedResponse.ErrorResponse("An error occured while buying AirtimeData", obj, StatusCodes.GeneralError);
             }
             catch(Exception ex)
             {
