@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using FYPBackEnd.Data.Models.ResponseModel;
 using FYPBackEnd.Settings;
 using FYPBackEnd.Data.Constants;
+using epAgentAuthentication.Services;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -84,6 +85,9 @@ namespace FYPBackEnd.Services.Implementation
             user.LastName = model.Lastname;
             user.PhoneNumber = Core.Utility.FormatPhoneNumber(model.PhoneNumber);
             user.Address = model.Address;
+            user.SaltProperty = CryptoServices.CreateRandomSalt();
+            user.IsPINSet = false;
+            user.PinTries = 0;
             user.Lga = model.LGA;
             user.State = model.State;
             user.Status = UserStatus.Inactive.ToString();

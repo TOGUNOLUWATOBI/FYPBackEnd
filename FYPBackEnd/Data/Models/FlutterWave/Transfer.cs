@@ -11,7 +11,7 @@ namespace FYPBackEnd.Data.Models.FlutterWave
     {
         public string Account_bank { get; set; }
         public string Account_number { get; set; }
-        public int Amount { get; set; }
+        public decimal Amount { get; set; }
         public string Narration { get; set; }
         public string Currency { get; set; }
         public string Reference { get; set; }
@@ -37,7 +37,7 @@ namespace FYPBackEnd.Data.Models.FlutterWave
         public DateTime created_at { get; set; }
         public string currency { get; set; }
         public string debit_currency { get; set; }
-        public int amount { get; set; }
+        public decimal amount { get; set; }
         public float fee { get; set; }
         public string status { get; set; }
         public string reference { get; set; }
@@ -86,6 +86,20 @@ namespace FYPBackEnd.Data.Models.FlutterWave
         public string account_name { get; set; }
     }
 
+
+    public class FeesResponseModel
+    {
+        public string status { get; set; }
+        public string message { get; set; }
+        public FeeData[] data { get; set; }
+    }
+
+    public class FeeData
+    {
+        public string currency { get; set; }
+        public string fee_type { get; set; }
+        public float fee { get; set; }
+    }
 
 
 }

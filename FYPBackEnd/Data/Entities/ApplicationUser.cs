@@ -11,6 +11,11 @@ namespace FYPBackEnd.Data.Entities
         public string LastName { get; set; }
         public string Address { get; set; }
         public string Lga { get; set; }
+        public int SaltProperty { get; set; }
+        public string TransactionPIN { get; set; }
+        public string PanicPIN { get; set; }
+        public int PinTries { get; set; }
+        public bool IsPINSet { get; set; }
         public string State { get; set; }
         public string Gender { get; set; }
         public string Status { get; set; }

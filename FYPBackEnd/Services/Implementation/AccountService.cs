@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using epAgentAuthentication.Services;
 using FYPBackEnd.Core;
 using FYPBackEnd.Data;
 using FYPBackEnd.Data.Constants;
@@ -11,6 +12,8 @@ using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -137,8 +140,12 @@ namespace FYPBackEnd.Services.Implementation
                 if (user.Status == UserStatus.Active.ToString())
                     return ReturnedResponse.ErrorResponse("Can't initiate transaction: your account is under review, contact support", null, StatusCodes.UnverifedUser);
 
-                //implement getting fee amount either by api call or get by api call and update it in database and use database value
-                var feeAmount = (decimal)10.75;
+                //todo: check whether the transaction pin is correct or not and also check if it panic mode
+
+                //todo: implement getting fee amount either by api call or get by api call and update it in database and use database value
+                var fee = await flutterWave.GetFees(model.Amount);
+                var feeData =  (FeesResponseModel) fee.Data;
+                var feeAmount = (decimal) feeData.data.FirstOrDefault().fee;
 
                 model.TrxAmount = model.Amount + feeAmount;
 
@@ -241,9 +248,14 @@ namespace FYPBackEnd.Services.Implementation
                     return ReturnedResponse.ErrorResponse("Can't initiate transaction: your account is under review, contact support", null, StatusCodes.UnverifedUser);
 
                 //implement getting fee amount either by api call or get by api call and update it in database and use database value
-                var feeAmount = (decimal)10.75;
+                //todo: implement getting fee amount either by api call or get by api call and update it in database and use database value
+                var fee = await flutterWave.GetFees(model.Amount);
+                var feeData = (FeesResponseModel)fee.Data;
+                var feeAmount = (decimal)feeData.data.FirstOrDefault().fee;
+                
 
                 model.TrxAmount = model.Amount + feeAmount;
+                model.TransferAmount = model.Amount-feeAmount;
 
 
                 //generate reference used to track transction for both thirdparty and inhouse
@@ -288,7 +300,8 @@ namespace FYPBackEnd.Services.Implementation
                     Debit_subaccount = account.ThirdPartyReference,
                     Account_bank = "035",
                     Account_number = "8540683210",
-                    Amount = model.Amount,
+                    //check if decimal can be sent on the api and use to confirm
+                    Amount = Convert.ToInt32(model.TransferAmount),
                     Currency = "NGN",
                     Narration = $"Internal Transfer for AirtimeData for : {model.Customer}",
                     Reference = reference
@@ -305,7 +318,7 @@ namespace FYPBackEnd.Services.Implementation
                         // call flutterwave to process the transaction
                         var flutterAirtimeData = await flutterWave.PayBill(new PayBillRequestModel()
                         {
-                            amount = Convert.ToInt32(model.TrxAmount),
+                            amount = Convert.ToInt32(model.Amount),
                             country = "NG",
                             recurrence = "ONCE",
                             reference = reference,
@@ -346,6 +359,152 @@ namespace FYPBackEnd.Services.Implementation
             {
                 return ReturnedResponse.ErrorResponse(ex.Message ?? ex.InnerException.ToString(), null, StatusCodes.ExceptionError);
             }
+        }
+
+        public async Task<ApiResponse> CheckTransactionPanicPin(CheckTransactionPinModel model, string userId) // check if it is correct and check whether it is panic mode or not
+        {
+            //validate Customers PIN
+            var user = await userManager.FindByIdAsync(userId);
+            if (string.IsNullOrEmpty(user.TransactionPIN))
+            {
+                return ReturnedResponse.ErrorResponse("User has not set Transaction Pin", null, StatusCodes.GeneralError);
+            }
+            var salt = user.SaltProperty;
+            var util = new CryptoServices(model.TrxPin, salt);
+            var hash = util.ComputeSaltedHash();
+            if (hash == user.TransactionPIN)
+            {
+                return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
+            }
+            if(hash == user.PanicPIN)
+            {
+                return ReturnedResponse.SuccessResponse(null, true, StatusCodes.PanicMode);
+            }
+            else
+            {
+                return ReturnedResponse.ErrorResponse("Invalid Transaction PIN", null, StatusCodes.GeneralError);
+            }
+        }
+
+        public async Task<ApiResponse> ChangeTransactionPin(ChangeTransactionPinModel model, string userId)
+        {
+            var isValidPin = Utility.ValidatePin(model.NewTrxPin);
+            if (!isValidPin)
+            {
+                return ReturnedResponse.ErrorResponse("Pin Numbers must not be same", null, StatusCodes.GeneralError);
+            }
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return ReturnedResponse.ErrorResponse("user not found", null, StatusCodes.GeneralError);
+            }
+            if (model.OldTrxPin == model.NewTrxPin)
+            {
+                return ReturnedResponse.ErrorResponse("Old pin cannot be the same as new pin", null, StatusCodes.GeneralError);
+            }
+            var util = new CryptoServices(model.OldTrxPin, user.SaltProperty);
+            var hash = util.ComputeSaltedHash();
+            if (user.TransactionPIN != hash)
+            {
+                return ReturnedResponse.ErrorResponse("Invalid Transaction PIN", null, StatusCodes.GeneralError);
+            }
+            var salt = CryptoServices.CreateRandomSalt();
+            util = new CryptoServices(model.NewTrxPin, salt);
+            var newHash = util.ComputeSaltedHash();
+            user.TransactionPIN = newHash;
+            user.SaltProperty = salt;
+            user.PinTries = 0;
+            await userManager.UpdateAsync(user);
+
+           
+            return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
+        }
+
+        public async Task<ApiResponse> AddTransactionPin(AddTransactionPinModel model, string userId)
+        {
+            //Add transaction PIN
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return ReturnedResponse.ErrorResponse("User not found", null,StatusCodes.GeneralError);
+            }
+            var isValidPin = Utility.ValidatePin(model.TrxPin);
+            if (!isValidPin)
+            {
+                return ReturnedResponse.ErrorResponse("Pin Number must not be same", null, StatusCodes.GeneralError);
+            }
+            var util = new CryptoServices(model.TrxPin, user.SaltProperty);
+            user.TransactionPIN = util.ComputeSaltedHash();
+            user.PinTries = 0;
+            user.IsPINSet = true;
+            await userManager.UpdateAsync(user);
+
+            
+            return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
+        }
+
+
+
+        public async Task<ApiResponse> ChangePanicModePin(ChangePanicModePinModel model, string userId)
+        {
+            var isValidPin = Utility.ValidatePin(model.NewPanicPin);
+            if (!isValidPin)
+            {
+                return ReturnedResponse.ErrorResponse("Pin Numbers must not be same", null, StatusCodes.GeneralError);
+            }
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return ReturnedResponse.ErrorResponse("user not found", null, StatusCodes.NoRecordFound);
+            }
+            if (model.OldPanicPin == model.NewPanicPin)
+            {
+                return ReturnedResponse.ErrorResponse("Old pin cannot be the same as new pin", null, StatusCodes.GeneralError);
+            }
+            var util = new CryptoServices(model.OldPanicPin, user.SaltProperty);
+            var hash = util.ComputeSaltedHash();
+            if (user.TransactionPIN != hash)
+            {
+                return ReturnedResponse.ErrorResponse("Invalid Transaction PIN", null, StatusCodes.GeneralError);
+            }
+            var salt = CryptoServices.CreateRandomSalt();
+            util = new CryptoServices(model.NewPanicPin, salt);
+            var newHash = util.ComputeSaltedHash();
+            user.PanicPIN = newHash;
+            user.SaltProperty = salt;
+            
+            await userManager.UpdateAsync(user);
+
+
+            return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
+        }
+
+        public async Task<ApiResponse> AddPanicModePin(AddPanicModePinModel model, string userId)
+        {
+            //Add transaction PIN
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return ReturnedResponse.ErrorResponse("User not found", null, StatusCodes.GeneralError);
+            }
+            var isValidPin = Utility.ValidatePin(model.PanicPin);
+            if (!isValidPin)
+            {
+                return ReturnedResponse.ErrorResponse("Panic Pin Number must not be same", null, StatusCodes.GeneralError);
+            }
+            var util = new CryptoServices(model.PanicPin, user.SaltProperty);
+
+            var hash = util.ComputeSaltedHash();
+
+            if(hash == user.TransactionPIN)
+            {
+                return ReturnedResponse.ErrorResponse("Panic Pin Number must not be same with transaction pin", null, StatusCodes.GeneralError);
+            }
+
+            user.PanicPIN = hash;
+            await userManager.UpdateAsync(user);
+
+            return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
         }
 
         private async Task<string> GenerateWalletAccountNumber()

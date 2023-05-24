@@ -81,6 +81,36 @@ namespace FYPBackEnd.Services.Implementation
         }
 
 
+        public async Task<ApiResponse> GetFees(int amount)
+        {
+            string getFeesUri = string.Concat(settings.BaseUrl, settings.Fees);
+
+            var response = new FeesResponseModel();
+            var client = new RestClient(getFeesUri);
+            var req = new RestRequest(Method.GET);
+
+            req.AddQueryParameter("amount", amount.ToString());
+            req.AddQueryParameter("currency", "NGN");
+
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            
+
+            var resp = await client.ExecuteAsync(req);
+
+            if (resp != null)
+            {
+                if (resp.IsSuccessful)
+                {
+                    response = JsonConvert.DeserializeObject<FeesResponseModel>(resp.Content);
+                    //log information gotten from flutterwave
+                    log.LogInformation("Flutterwave Transfer fee fetched", response);
+                    return ReturnedResponse.SuccessResponse("flutterwave Transfer fee fetched", response, StatusCodes.Successful);
+                }
+            }
+            return ReturnedResponse.ErrorResponse("flutterwave Transfer fee couldn't be fetched", response, StatusCodes.ThirdPartyError);
+        }
+
+
         public async Task<ApiResponse> GetPaymentSubaccountBalance(string thirdpartyReference)
         {
             if (string.IsNullOrEmpty(thirdpartyReference))

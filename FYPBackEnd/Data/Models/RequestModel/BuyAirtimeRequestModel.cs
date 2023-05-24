@@ -7,6 +7,7 @@
         public string Type { get; set; }
         public int Amount { get; set; }
         public decimal TrxAmount { get; set; }
+        public decimal TransferAmount { get; set; }
         public string Recurrence { get; set; }
         public string Reference { get; set; }
         public string longitude { get; set; }

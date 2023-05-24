@@ -3,6 +3,7 @@
     public class StatusCodes
     {
         public const string Successful = "B00";
+        public const string PanicMode = "B01";
         public const string GeneralError = "B99";
         public const string NoRecordFound = "B25";
         public const string RecordExist = "B26";

@@ -12,5 +12,6 @@
         public string ValidateBillPayment { get; set; }
         public string AccountNameVerifcation { get; set; }
         public string Transfers { get; set;}
+        public string Fees { get; set;}
     }
 }
