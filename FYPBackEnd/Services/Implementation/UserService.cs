@@ -19,6 +19,8 @@ using FYPBackEnd.Data.Models.ResponseModel;
 using FYPBackEnd.Settings;
 using FYPBackEnd.Data.Constants;
 using epAgentAuthentication.Services;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -165,7 +167,10 @@ namespace FYPBackEnd.Services.Implementation
 
                     }
 
-
+                    var authClaims = new List<Claim>
+                    {
+                      new Claim("userId", user.Id)
+                    };
 
                     var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
 
@@ -173,17 +178,20 @@ namespace FYPBackEnd.Services.Implementation
                         issuer: _appSettings.ValidIssuer,
                         audience: _appSettings.ValidAudience,
                         expires: DateTime.Now.AddHours(_appSettings.JwtLifespan),
-                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
+                        claims: authClaims
                         );
 
                     var bearerToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+                    
 
                     var loginResponseModel = new LoginResponseModel
                     {
                         AccessToken = bearerToken,
                         TokenType = "Bearer",
                         Email = model.EmailAddress,
-                        ExpiresIn = DateTime.Now.AddHours(_appSettings.JwtLifespan)
+                        ExpiresIn = DateTime.Now.AddHours(_appSettings.JwtLifespan),
                     };
 
 

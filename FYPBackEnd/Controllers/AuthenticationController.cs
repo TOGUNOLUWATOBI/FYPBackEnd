@@ -13,6 +13,8 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using StatusCodes = FYPBackEnd.Data.Constants.StatusCodes;
 using Microsoft.AspNetCore.Hosting;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace FYPBackEnd.Controllers
 {
@@ -361,6 +363,18 @@ namespace FYPBackEnd.Controllers
                 log.LogInformation(string.Concat($"Error occured in resetting password", errMessage));
                 return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.ExceptionError));
             }
+        }
+
+
+        private string GetUserId(ClaimsIdentity identity)
+        {
+
+            // Gets list of claims.
+            IEnumerable<Claim> claim = identity.Claims;
+
+            // Gets name from claims. Generally it's an email address.
+            return claim.Where(x => x.Type == "userId")
+                .FirstOrDefault().Value;
         }
     }
 }

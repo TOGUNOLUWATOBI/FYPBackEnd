@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FYPBackEnd.Data.Entities
 {
@@ -10,7 +12,9 @@ namespace FYPBackEnd.Data.Entities
         public string ThirdPartyReference { get; set; }
         public string ThirdPartyBankName { get; set; }
         public string ThirdPartyBankCode { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Balance { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal ThirdPartyBalance { get; set; }
         public string Status { get; set; }
         public string AccountName { get; set; }

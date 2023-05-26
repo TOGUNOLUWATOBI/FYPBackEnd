@@ -47,11 +47,11 @@ namespace FYPBackEnd
 
             //todo: change this so that endpoints can use authentication and authorization
 
-            //services.AddControllers(opt =>
-            //{
-            //    var policy = new AuthorizationPolicyBuilder("Bearer").RequireAuthenticatedUser().Build();
-            //    opt.Filters.Add(new AuthorizeFilter(policy));
-            //});
+            services.AddControllers(opt =>
+            {
+                var policy = new AuthorizationPolicyBuilder("Bearer").RequireAuthenticatedUser().Build();
+                opt.Filters.Add(new AuthorizeFilter(policy));
+            });
 
             services.AddMvc();
 
@@ -159,9 +159,9 @@ namespace FYPBackEnd
             app.UseCors("AllowAllMethod");
 
             //todo: change this to use authentication and authorization in live
-//            app.UseAuthentication();
+            app.UseAuthentication();
 
-//            app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
