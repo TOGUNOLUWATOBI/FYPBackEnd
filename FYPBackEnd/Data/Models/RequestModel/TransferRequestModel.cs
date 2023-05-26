@@ -14,4 +14,10 @@ namespace FYPBackEnd.Data.Models.RequestModel
         public string latitude { get; set; }
         public string longitude { get; set; }
     }
+
+    public class VerifyAccountUserRequestModel
+    {
+        public string account_number { get; set; }
+        public string bank_name { get; set; }
+    }
 }

@@ -8,6 +8,7 @@ using FYPBackEnd.Data.Enums;
 using FYPBackEnd.Data.Models.DTO;
 using FYPBackEnd.Data.Models.FlutterWave;
 using FYPBackEnd.Data.Models.RequestModel;
+using FYPBackEnd.Data.Models.ResponseModel;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -511,6 +512,68 @@ namespace FYPBackEnd.Services.Implementation
         {
             var resposne = await flutterWave.GetFees(Amount);
             return resposne;
+        }
+
+        public async Task<ApiResponse> validateAccountUser(VerifyAccountUserRequestModel model)
+        {
+            var bank = await context.Banks.FirstOrDefaultAsync(x => x.BankName == model.bank_name);
+
+            if(bank == null)
+            {
+                return ReturnedResponse.ErrorResponse("An error while fetching bank", null, StatusCodes.NoRecordFound);
+            }
+            var bankCode = bank.BankCode;
+            var resp = await flutterWave.AccountNameVerification(new AccountNameVerificationModel()
+            {
+                account_bank = bankCode,
+                account_number = model.account_number
+            });
+
+            if(resp.Status == Status.Successful.ToString()) 
+            {
+                var verifyNameResponse = new VerifyAccountUserResponseModel()
+                {
+                    account_number = model.account_number,
+                    bank_code = bank.BankCode,
+                    bank_name = bank.BankName,
+                };
+
+                return ReturnedResponse.SuccessResponse("Account Details Fetched", verifyNameResponse, StatusCodes.Successful);
+            }
+            return resp;
+        }
+
+        public async Task<ApiResponse> PopulateBankTable()
+        {
+
+            var isPopulated = await context.Banks.ToListAsync();
+            //check so as not to fill table that hs been populated (i.e this action can only be performed once per database)
+            if (isPopulated.Count > 0)
+            {
+                return ReturnedResponse.SuccessResponse("Bank Table Already Populated", null, StatusCodes.Successful);
+            }
+
+            var resp = await flutterWave.GetAllBanks();
+            var data = (BankResponseModel)resp.Data;
+                     
+            var thirdPartyData = data.Data;
+
+            foreach (var item in thirdPartyData)
+            {
+                var bank = new Bank()
+                {
+                    id = Guid.NewGuid(),
+                    CreationDate = DateTime.Now,
+                    LastModifiedDate = DateTime.Now,
+                    BankCode = item.Code,
+                    BankName = item.Name,
+                };
+
+                context.Banks.Add(bank);
+            }
+            await context.SaveChangesAsync();
+
+            return ReturnedResponse.SuccessResponse("Bank Table Populated", null, StatusCodes.Successful);
         }
 
         //public async Task<ApiResponse> FetchUserLastTrasnasction(string theUserId)
