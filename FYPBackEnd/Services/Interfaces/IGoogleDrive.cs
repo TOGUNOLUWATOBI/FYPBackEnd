@@ -6,6 +6,6 @@ namespace FYPBackEnd.Services.Interfaces
 {
     public interface IGoogleDrive
     {
-        Task<ApiResponse> UploadFileWithMetaData(IFormFile file);
+        Task<ApiResponse> UploadFileWithMetaData(IFormFile file, string theUserId);
     }
 }

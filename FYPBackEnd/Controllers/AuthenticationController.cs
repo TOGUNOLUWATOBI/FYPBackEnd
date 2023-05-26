@@ -297,23 +297,8 @@ namespace FYPBackEnd.Controllers
                 if(model == null)
                     return BadRequest(ReturnedResponse.ErrorResponse("no file was uploaded", null, StatusCodes.ModelError));
 
-                //if (model.file.Length > 0)
-                //{
-                //    //if (!Directory.Exists(_environment.WebRootPath + "\\Upload"))
-                //    //{
-                //    //    Directory.CreateDirectory(_environment.WebRootPath + "\\Upload\\");
-                //    //}
-                //    //using (FileStream filestream = System.IO.File.Create(_environment.WebRootPath + "\\Upload\\" + model.file.FileName))
-                //    //{
-                //    //    model.file.CopyTo(filestream);
-                //    //    filestream.Flush();
-                //    //    //  return "\\Upload\\" + objFile.files.FileName;
-                //    //}
-
-                //    return Ok("success");
-                //}
-
-                var resp = await googleDrive.UploadFileWithMetaData(model.file);
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+                var resp = await googleDrive.UploadFileWithMetaData(model.file, theUserId);
                 if (resp.Status == Status.Successful.ToString())
                 {
                     return Ok(resp);

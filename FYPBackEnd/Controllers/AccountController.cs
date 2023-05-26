@@ -275,7 +275,7 @@ namespace FYPBackEnd.Controllers
             catch (Exception ex)
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
-                log.LogInformation(string.Concat($"Error occured in Changing Transaction pin", errMessage));
+                log.LogInformation(string.Concat($"Error occured in Changing Panic pin", errMessage));
                 return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }

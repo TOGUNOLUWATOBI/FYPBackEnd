@@ -1,4 +1,6 @@
-﻿using FYPBackEnd.Data.Constants;
+﻿using FYPBackEnd.Data;
+using FYPBackEnd.Data.Constants;
+using FYPBackEnd.Data.Entities;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
 using Google.Apis.Auth.OAuth2;
@@ -6,7 +8,9 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -17,17 +21,31 @@ namespace FYPBackEnd.Services.Implementation
 {
     public class GoogleDrive: IGoogleDrive
     {
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly ApplicationDbContext context;
+
+        public GoogleDrive(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        {
+            this.userManager = userManager;
+            this.context = context;
+        }
+
         private const string DirectoryId = "1cmBb_P3uOK5C17yplAhtJJRXIzKA8o75";
        // private const string uploadFilenme = "testing";
         private const string serviceAccountEmail = "fypbackend@fypbackend2023.iam.gserviceaccount.com";
         //private const string filePath = @"C:\Users\BEBS\Pictures\passport(2).jpg";
-        public async Task<ApiResponse> UploadFileWithMetaData(IFormFile requestFile)
+        public async Task<ApiResponse> UploadFileWithMetaData(IFormFile requestFile, string userId)
         {
+            var user = await userManager.FindByIdAsync(userId);
+            if(user == null)
+            {
+                return ReturnedResponse.ErrorResponse("user not found", null, StatusCodes.NoRecordFound);
+            }
             if (requestFile == null)
                 ReturnedResponse.ErrorResponse("the file has a issue being found to be uploaded",null, StatusCodes.GeneralError);
             try
             {
-
+                
                 var certificate = new X509Certificate2("key.p12", "notasecret", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
 
                 
@@ -68,6 +86,9 @@ namespace FYPBackEnd.Services.Implementation
                         return ReturnedResponse.ErrorResponse(null, null, StatusCodes.GeneralError);
                     }
                     var file = request.ResponseBody;
+                    user.ProficePictureId = file.Id;
+                    context.Update(user);
+                    await context.SaveChangesAsync();
                     return ReturnedResponse.SuccessResponse(file.Id, file, StatusCodes.Successful);
                 }
 

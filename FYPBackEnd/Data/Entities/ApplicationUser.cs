@@ -20,6 +20,8 @@ namespace FYPBackEnd.Data.Entities
         public string Gender { get; set; }
         public string Status { get; set; }
 
+        public string ProficePictureId { get; set; }
+
         public bool IsKYCComplete { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
