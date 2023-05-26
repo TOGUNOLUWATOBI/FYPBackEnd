@@ -138,7 +138,7 @@ namespace FYPBackEnd.Services.Implementation
                 var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
 
                 // check if user is blacklisted or inactive
-                if (user.Status == UserStatus.Active.ToString())
+                if (user.Status != UserStatus.Active.ToString())
                     return ReturnedResponse.ErrorResponse("Can't initiate transaction: your account is under review, contact support", null, StatusCodes.UnverifedUser);
 
                 //todo: check whether the transaction pin is correct or not and also check if it panic mode
@@ -245,7 +245,7 @@ namespace FYPBackEnd.Services.Implementation
                 var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
 
                 // check if user is blacklisted or inactive
-                if (user.Status == UserStatus.Active.ToString())
+                if (user.Status != UserStatus.Active.ToString())
                     return ReturnedResponse.ErrorResponse("Can't initiate transaction: your account is under review, contact support", null, StatusCodes.UnverifedUser);
 
                 //implement getting fee amount either by api call or get by api call and update it in database and use database value
@@ -514,7 +514,7 @@ namespace FYPBackEnd.Services.Implementation
             return resposne;
         }
 
-        public async Task<ApiResponse> validateAccountUser(VerifyAccountUserRequestModel model)
+        public async Task<ApiResponse> validateAccountDetails(VerifyAccountUserRequestModel model)
         {
             var bank = await context.Banks.FirstOrDefaultAsync(x => x.BankName == model.bank_name);
 

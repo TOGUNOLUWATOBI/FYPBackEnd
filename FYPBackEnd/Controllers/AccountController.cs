@@ -314,8 +314,75 @@ namespace FYPBackEnd.Controllers
                 return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }
+       
 
 
+        [HttpGet]
+        [Route("api/v1/VerifyAccountDetaails")]
+        public async Task<IActionResult> VerifyAccountDetaails(VerifyAccountUserRequestModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+                
+                var resp = await accountService.validateAccountDetails(model);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in verifying account details", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
+        [HttpPost]
+        [Route("api/v1/PopulateBankTable")]
+        public async Task<IActionResult> PopulateBankTable()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+
+                var resp = await accountService.PopulateBankTable();
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in populating bank table", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
 
         private string GetUserId(ClaimsIdentity identity)
         {
