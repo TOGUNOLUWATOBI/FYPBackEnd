@@ -12,7 +12,7 @@ namespace FYPBackEnd.Data.Entities
         public string Reference { get; set; }
         public string Description { get; set; }
         public string PostingType { get; set; } // cr, dr
-        public string TransactionType { get; set; } // transfer, airtime/data, BillsPayment
+        public string TransactionType { get; set; } // Cash_in,transfer, airtime/data, BillsPayment
         
         [Column(TypeName = "decimal(18,2)")]
         public decimal BalanceBeforeTransaction { get; set; }

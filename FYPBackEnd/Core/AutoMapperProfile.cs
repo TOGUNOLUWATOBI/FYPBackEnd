@@ -11,7 +11,7 @@ namespace FYPBackEnd.Core
         {
             CreateMap<ApplicationUser, UserDto>();
             CreateMap<Account, AccountDto>();
-            CreateMap<Transaction, TransactionDto>();
+            CreateMap<Transaction, TransferDto>();
         }
     }
 }

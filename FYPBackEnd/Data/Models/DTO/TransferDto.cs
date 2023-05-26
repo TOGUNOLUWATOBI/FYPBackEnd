@@ -1,6 +1,6 @@
 ﻿namespace FYPBackEnd.Data.Models.DTO
 {
-    public class TransactionDto
+    public class TransferDto
     {
         public decimal Amount { get; set; }
         public string Reference { get; set; }

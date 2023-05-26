@@ -15,5 +15,6 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> ChangeTransactionPin(ChangeTransactionPinModel model, string userId);
         Task<ApiResponse> AddTransactionPin(AddTransactionPinModel model, string userId);
         Task<ApiResponse> ChangePanicModePin(ChangePanicModePinModel model, string userId);
+        Task<ApiResponse> CheckTransactionFee(int Amount);
     }
 }

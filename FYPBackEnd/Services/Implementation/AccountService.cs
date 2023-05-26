@@ -212,7 +212,7 @@ namespace FYPBackEnd.Services.Implementation
                         context.Update(transaction);
                         await context.SaveChangesAsync();
 
-                        var transactionDto = map.Map<TransactionDto>(transaction);
+                        var transactionDto = map.Map<TransferDto>(transaction);
 
                         transactionDto.BeneficiaryName = model.BeneficiaryName;
                         transactionDto.BeneficiaryBank = model.BeneficiaryBank;
@@ -343,7 +343,7 @@ namespace FYPBackEnd.Services.Implementation
                                 context.Update(transaction);
                                 await context.SaveChangesAsync();
 
-                                var transactionDto = map.Map<TransactionDto>(transaction);
+                                var transactionDto = map.Map<TransferDto>(transaction);
 
                                 transactionDto.PhoneNumber = model.Customer;
 
@@ -506,6 +506,21 @@ namespace FYPBackEnd.Services.Implementation
 
             return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
         }
+
+        public async Task<ApiResponse> CheckTransactionFee(int Amount)
+        {
+            var resposne = await flutterWave.GetFees(Amount);
+            return resposne;
+        }
+
+        //public async Task<ApiResponse> FetchUserLastTrasnasction(string theUserId)
+        //{
+        //    var user = await userManager.FindByIdAsync(theUserId);
+        //    if (user == null)
+        //    {
+        //        return ReturnedResponse.ErrorResponse("User doesn't exist", null, StatusCodes.NoRecordFound);
+        //    }
+        //}
 
         private async Task<string> GenerateWalletAccountNumber()
         {

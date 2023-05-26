@@ -280,6 +280,42 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("api/v1/GetAmountFees")]
+
+
+        public async Task<IActionResult> GetAmountFees(int amount)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+                var resp = await accountService.CheckTransactionFee(amount);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in getting amount fees", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
 
         private string GetUserId(ClaimsIdentity identity)
         {
