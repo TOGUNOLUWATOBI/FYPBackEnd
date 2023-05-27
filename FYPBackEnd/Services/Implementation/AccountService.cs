@@ -36,12 +36,13 @@ namespace FYPBackEnd.Services.Implementation
             this.map = map;
         }
 
-        public async Task<ApiResponse> GenerateAccountNumber(ApplicationUser user, string bvn)
+        public async Task<ApiResponse> GenerateAccountNumber(string userId)
         {
             try
             {
-                var userExist = await userManager.FindByEmailAsync(user.Email);
-                if (userExist == null)
+                var user = await userManager.FindByIdAsync(userId);
+                //var userExist = await userManager.FindByEmailAsync(user.Email);
+                if (user == null)
                 {
                     return ReturnedResponse.ErrorResponse("Couldn't generate account for this user, user records doesn't exist", null, StatusCodes.NoRecordFound);
                 }

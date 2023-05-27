@@ -8,7 +8,7 @@ namespace FYPBackEnd.Services.Interfaces
     public interface IAccountService
     {
         Task<ApiResponse> AddPanicModePin(AddPanicModePinModel model, string userId);
-        Task<ApiResponse> GenerateAccountNumber(ApplicationUser user, string bvn);
+        Task<ApiResponse> GenerateAccountNumber(string userId);
         Task<ApiResponse> InitiateTransfer(TransferRequestModel model, string userId);
         Task<ApiResponse> BuyAirtimeData(BuyAirtimeRequestModel model, string userId);
         Task<ApiResponse> CheckTransactionPanicPin(CheckTransactionPinModel model, string userId);

@@ -31,10 +31,11 @@ namespace FYPBackEnd.Services.Implementation
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper map;
         private readonly IMailService mailService;
+        private readonly IAccountService accountService;
         private readonly AppSettings _appSettings;
 
 
-        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings)
+        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings, IAccountService accountService)
         {
             _userManager = userManager;
             this.context = context;
@@ -42,6 +43,7 @@ namespace FYPBackEnd.Services.Implementation
             this.map = map;
             this.mailService = mailService;
             _appSettings = appSettings.Value;
+            this.accountService = accountService;
         }
 
         public async Task<ApiResponse> ActivateUser(string email)
@@ -268,6 +270,8 @@ namespace FYPBackEnd.Services.Implementation
                 {
                     return ReturnedResponse.ErrorResponse("User account couldn't be verified", null, StatusCodes.NoRecordFound);
                 }
+
+                await accountService.GenerateAccountNumber(user.Id);
 
                 return await ActivateUser(user.Email);
             }
