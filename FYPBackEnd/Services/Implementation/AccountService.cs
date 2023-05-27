@@ -40,6 +40,13 @@ namespace FYPBackEnd.Services.Implementation
         {
             try
             {
+                var userHasAccount  = await context.Accounts.FirstOrDefaultAsync(x=> x.UserId == userId);
+
+                if(userHasAccount != null)
+                {
+                    return ReturnedResponse.ErrorResponse("User already has an account", null, StatusCodes.RecordExist);
+                }
+
                 var user = await userManager.FindByIdAsync(userId);
                 //var userExist = await userManager.FindByEmailAsync(user.Email);
                 if (user == null)
