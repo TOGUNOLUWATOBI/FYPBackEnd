@@ -12,6 +12,8 @@ using RestSharp;
 using System;
 using System.Threading.Tasks;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using FYPBackEnd.Data;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -19,11 +21,13 @@ namespace FYPBackEnd.Services.Implementation
     {
         public FlutterWaveSettings settings;
         public ILogger<FlutterWave> log;
+        private readonly ApplicationDbContext context;
 
-        public FlutterWave(IOptions<FlutterWaveSettings> settings, ILogger<FlutterWave> log)
+        public FlutterWave(IOptions<FlutterWaveSettings> settings, ILogger<FlutterWave> log, ApplicationDbContext context)
         {
             this.settings = settings.Value;
             this.log = log;
+            this.context = context;
         }
 
         public async Task<ApiResponse> CreateVirtualStaticAccount(CreateVIrtualRequestModel model)
@@ -326,6 +330,44 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             return ReturnedResponse.ErrorResponse("flutterwave couldn't retrieve all banks", response, StatusCodes.ThirdPartyError);
+        }
+
+
+        public async Task<ApiResponse> ProcessWebhook(WebhookRequest model)
+        {
+            //todo: finish up on this
+            if(model.Event == "transfer.completed")
+            {
+
+                //this is for both transfer in and successful transfer out
+                if(model.data.status == "SUCCESSFUL")
+                {
+                    var transaction = await context.Transactions.FirstOrDefaultAsync(x=> x.Reference == model.data.reference);
+                    if(transaction != null)
+                    {
+                        //todo: push notification that the transaction has been succesful and should reach the beneficiary soon/immediately
+                        return ReturnedResponse.SuccessResponse("Webhook successful", null, StatusCodes.Successful);
+                    }
+                }
+
+
+                // this is for failed transfer out of an account
+                if(model.data.status == "FAILED")
+                {
+                    var transaction = await context.Transactions.FirstOrDefaultAsync(x => x.Reference == model.data.reference);
+                    if (transaction != null)
+                    {
+                        //todo: push notification that the transaction has been reversed or requery it       /// let see how it goes
+                        return ReturnedResponse.SuccessResponse("Webhook successful", null, StatusCodes.Successful);
+                    }
+                }
+
+                return ReturnedResponse.ErrorResponse("Something went wrong somwehere", model, StatusCodes.ThirdPartyError);
+            }
+
+            //todo: notify admin that an issue occured in the process and should check the database for the issue
+            return ReturnedResponse.SuccessResponse("Webhook successful", model, StatusCodes.Successful);
+
         }
 
         public async Task<ApiResponse> AccountNameVerification(AccountNameVerificationModel model)

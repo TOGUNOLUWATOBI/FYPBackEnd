@@ -64,7 +64,7 @@ namespace FYPBackEnd.Services.Implementation
                 var fileMetaData = new Google.Apis.Drive.v3.Data.File()
                 {
 
-                    //todo: change this name to the user id or combo of first and last name 
+                    
                     Name = user.FirstName  + " "+ user.LastName,
                     MimeType = "image/jpeg",
                     Parents = new[] { DirectoryId }

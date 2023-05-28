@@ -276,8 +276,6 @@ namespace FYPBackEnd.Controllers
         }
 
 
-        //todo: change this to the right controller
-        //todo: decrypt jwt passed soa s to know the user name/id topass to save the picture
 
 
         [HttpPost]

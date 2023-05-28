@@ -13,5 +13,7 @@
         public string AccountNameVerifcation { get; set; }
         public string Transfers { get; set;}
         public string Fees { get; set;}
+        public string SecretHash { get; set;}
+        public string SaltProperty { get; set;}
     }
 }

@@ -151,7 +151,7 @@ namespace FYPBackEnd.Services.Implementation
 
                 //todo: check whether the transaction pin is correct or not and also check if it panic mode
 
-                //todo: implement getting fee amount either by api call or get by api call and update it in database and use database value
+                //implement getting fee amount either by api call or get by api call and update it in database and use database value
                 var fee = await flutterWave.GetFees(model.Amount);
                 var feeData =  (FeesResponseModel) fee.Data;
                 var feeAmount = (decimal) feeData.data.FirstOrDefault().fee;

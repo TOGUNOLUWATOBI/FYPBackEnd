@@ -46,7 +46,7 @@ namespace FYPBackEnd
             services.AddControllers();
 
 
-            //todo: change this so that endpoints can use authentication and authorization
+            
 
             services.AddControllers(opt =>
             {
@@ -160,7 +160,7 @@ namespace FYPBackEnd
             app.UseRouting();
             app.UseCors("AllowAllMethod");
 
-            //todo: change this to use authentication and authorization in live
+            
             app.UseAuthentication();
 
             app.UseAuthorization();

@@ -6,5 +6,7 @@
         public string BvnVerify { get; set; }
         public string GetBvn { get; set; }
         public string SecretKey { get; set; }
+        public string SecretHash { get; set; }
+        public string SaltProperty { get; set; }
     }
 }
