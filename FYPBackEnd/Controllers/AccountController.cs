@@ -384,6 +384,42 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("api/v1/GenerateAccountNumber")]
+        public async Task<IActionResult> GenerateAccountNumber()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+                var resp = await accountService.GenerateAccountNumber(theUserId);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in populating bank table", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
         private string GetUserId(ClaimsIdentity identity)
         {
             

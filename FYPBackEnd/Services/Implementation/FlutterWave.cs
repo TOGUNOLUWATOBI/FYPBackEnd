@@ -6,10 +6,12 @@ using FYPBackEnd.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
 using RestSharp;
 using System;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -53,17 +55,17 @@ namespace FYPBackEnd.Services.Implementation
 
         public async Task<ApiResponse> CreatePayoutSubaccount(CreatePaymentSubaccountRequestModel model)
         {
-            string createPaymentSubaccountUri = string.Concat(settings.BaseUrl, settings.VirtualAccount);
+            string createPaymentSubaccountUri = string.Concat(settings.BaseUrl, settings.PaymentSubaccount);
 
             var response = new CreatePaymentSubaccountResponseModel();
             var client = new RestClient(createPaymentSubaccountUri);
             var req = new RestRequest(Method.POST);
 
             model.bank_code = "232";
-            model.country = "NGN";
-
-            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            model.country = "NG";
             req.AddJsonBody(model);
+            req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            
 
             var resp = await client.ExecuteAsync(req);
 

@@ -106,7 +106,7 @@ namespace FYPBackEnd.Services.Implementation
                         account.ThirdPartyBankName = resp.data.bank_name;
                         account.ThirdPartyBankCode = resp.data.bank_code;
 
-                        if (accountRef != resp.data.account_reference)
+                        if (accountRef == resp.data.account_reference)
                         {
                             account.ThirdPartyReference = resp.data.account_reference;
                         }
@@ -196,14 +196,14 @@ namespace FYPBackEnd.Services.Implementation
                 // call flutterwave to process the transaction
                 var flutterTransfer = await flutterWave.InitiateTransfer(new InitiateTransferRequestModel()
                 {
-                    Debit_currency = "NGN",
-                    Debit_subaccount = account.ThirdPartyReference,
-                    Account_bank = model.BeneficiaryBankCode,
-                    Account_number = model.BeneficiaryAccountNumber,
-                    Amount = model.Amount,
-                    Currency = "NGN",
-                    Narration = model.Description,
-                    Reference = reference
+                    debit_currency = "NGN",
+                    debit_subaccount = account.ThirdPartyReference,
+                    account_bank = model.BeneficiaryBankCode,
+                    account_number = model.BeneficiaryAccountNumber,
+                    amount = model.Amount,
+                    currency = "NGN",
+                    narration = model.Description,
+                    reference = reference
                 });
 
 
@@ -305,15 +305,15 @@ namespace FYPBackEnd.Services.Implementation
 
                 var flutterTransfer = await flutterWave.InitiateTransfer(new InitiateTransferRequestModel()
                 {
-                    Debit_currency = "NGN",
-                    Debit_subaccount = account.ThirdPartyReference,
-                    Account_bank = "035",
-                    Account_number = "8540683210",
+                    debit_currency = "NGN",
+                    debit_subaccount = account.ThirdPartyReference,
+                    account_bank = "035",
+                    account_number = "8540683210",
                     //check if decimal can be sent on the api and use to confirm
-                    Amount = Convert.ToInt32(model.TransferAmount),
-                    Currency = "NGN",
-                    Narration = $"Internal Transfer for AirtimeData for : {model.Customer}",
-                    Reference = reference
+                    amount = Convert.ToInt32(model.TransferAmount),
+                    currency = "NGN",
+                    narration = $"Internal Transfer for AirtimeData for : {model.Customer}",
+                    reference = reference
                 });
 
                 Object obj = null;

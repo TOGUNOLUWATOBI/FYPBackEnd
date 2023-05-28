@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using RestSharp;
 
 namespace FYPBackEnd
 {
@@ -51,7 +52,7 @@ namespace FYPBackEnd
             {
                 var policy = new AuthorizationPolicyBuilder("Bearer").RequireAuthenticatedUser().Build();
                 opt.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddNewtonsoftJson();
 
             services.AddMvc();
 
@@ -120,6 +121,7 @@ namespace FYPBackEnd
             services.AddScoped<IGoogleDrive, GoogleDrive>();
             services.AddScoped<IOkra, Okra>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddTransient<IRestClient, RestClient>();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
 

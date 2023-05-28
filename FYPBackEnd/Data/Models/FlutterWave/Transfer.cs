@@ -9,16 +9,17 @@ namespace FYPBackEnd.Data.Models.FlutterWave
 
     public class InitiateTransferRequestModel
     {
-        public string Account_bank { get; set; }
-        public string Account_number { get; set; }
-        public decimal Amount { get; set; }
-        public string Narration { get; set; }
-        public string Currency { get; set; }
-        public string Reference { get; set; }
-        public string Callback_url { get; set; }
-        public string Debit_currency { get; set; }
-        public string Debit_subaccount { get; set; }
+        public string account_bank { get; set; }
+        public string account_number { get; set; }
+        public float amount { get; set; }
+        public string narration { get; set; }
+        public string currency { get; set; }
+        public string reference { get; set; }
+        public string callback_url { get; set; }
+        public string debit_currency { get; set; }
+        public string debit_subaccount { get; set; }
     }
+
 
     public class InitiateTransferResponseModel
     {

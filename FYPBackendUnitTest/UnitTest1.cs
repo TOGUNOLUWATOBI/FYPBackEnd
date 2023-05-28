@@ -30,6 +30,7 @@ namespace FYPBackendUnitTest
         private Mock<IMailService> mailService;
         private Mock<IOptions<AppSettings>> _appSettings;
         private Mock<IOtpService> otpService;
+        private Mock<IAccountService> accountService;
         //private Mock<>
 
         private UserService _service;
@@ -55,6 +56,7 @@ namespace FYPBackendUnitTest
             map = new Mock<IMapper>();
             otpService = new Mock<IOtpService>();
             mailService = new Mock<IMailService>();
+            accountService = new Mock<IAccountService>();
 
             var mockMapper = new MapperConfiguration(cfg =>
             {
@@ -78,7 +80,7 @@ namespace FYPBackendUnitTest
             mailService.Setup(m => m.SendVerificationEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(resp);
             
 
-            _service = new UserService(_userManager.Object, _context.Object, _signInManager.Object, mapper, mailService.Object, _appSettings.Object);
+            _service = new UserService(_userManager.Object, _context.Object, _signInManager.Object, mapper, mailService.Object, _appSettings.Object,accountService.Object);
         }
 
         [Test]
