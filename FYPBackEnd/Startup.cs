@@ -122,6 +122,7 @@ namespace FYPBackEnd
             services.AddScoped<IOkra, Okra>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IWebhookService, WebhookService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddTransient<IRestClient, RestClient>();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
