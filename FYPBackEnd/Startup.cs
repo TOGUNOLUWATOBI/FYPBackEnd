@@ -132,6 +132,7 @@ namespace FYPBackEnd
             services.Configure<FlutterWaveSettings>(Configuration.GetSection(nameof(FlutterWaveSettings)));
             services.Configure<OkraSettings>(Configuration.GetSection(nameof(OkraSettings)));
             services.Configure<UVerifySettings>(Configuration.GetSection(nameof(UVerifySettings)));
+            services.Configure<FcmNotificationSetting>(Configuration.GetSection(nameof(FcmNotificationSetting)));
 
             services.AddDbContext<ApplicationDbContext>();
 

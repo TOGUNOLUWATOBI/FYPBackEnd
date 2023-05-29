@@ -18,6 +18,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="CorePush" Version="3.1.1" />
     <PackageReference Include="Google.Apis.Auth" Version="1.60.0" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3034" />
     <PackageReference Include="MailKit" Version="3.4.3" />
@@ -39,6 +40,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="RestSharp.Newtonsoft.Json" Version="1.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.4.0" />
   </ItemGroup>
