@@ -23,6 +23,8 @@ namespace FYPBackEnd.Data.Entities
         public string ProficePictureId { get; set; }
 
         public bool IsKYCComplete { get; set; }
+        public bool IsAndroidDevice { get; set; }
+        public string DeviceToken { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }
