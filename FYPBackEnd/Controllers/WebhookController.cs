@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace FYPBackEnd.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class WebhookController : Controller
     {
         private readonly IWebhookService webhook;
@@ -26,7 +28,7 @@ namespace FYPBackEnd.Controllers
 
 
         [HttpPost]
-        [Route("api/webhook/flutterwave")]
+        [Route("api/v1/flutterwave")]
         public async Task<IActionResult> FWHandleWebhook([FromBody] WebhookRequest request)
         {
             try
