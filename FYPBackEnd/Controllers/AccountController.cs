@@ -22,9 +22,9 @@ namespace FYPBackEnd.Controllers
         private readonly IAccountService accountService;
         private readonly IGoogleDrive googleDrive;
         public static IWebHostEnvironment _environment;
-        private readonly ILogger<AuthenticationController> log;
+        private readonly ILogger<AccountController> log;
 
-        public AccountController(IAccountService accountService, IGoogleDrive googleDrive, ILogger<AuthenticationController> log, IWebHostEnvironment environment)
+        public AccountController(IAccountService accountService, IGoogleDrive googleDrive, ILogger<AccountController> log, IWebHostEnvironment environment)
         {
             this.accountService = accountService;
             this.googleDrive = googleDrive;

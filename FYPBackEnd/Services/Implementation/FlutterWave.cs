@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using FYPBackEnd.Data;
+using FYPBackEnd.Data.Entities;
+using FYPBackEnd.Data.Enums;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -348,6 +350,49 @@ namespace FYPBackEnd.Services.Implementation
                         //todo: push notification that the transaction has been succesful and should reach the beneficiary soon/immediately
                         return ReturnedResponse.SuccessResponse("Webhook successful", null, StatusCodes.Successful);
                     }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(model.data.complete_message))
+                        {
+                            var account = await context.Accounts.FirstOrDefaultAsync(x => x.ThirdPartyReference == model.data.reference);
+                            if (account != null)
+                            {
+                                var fee = 1.4 * model.data.amount / 100;
+                                //create new transaction record
+                                var transactionn = new Transaction()
+                                {
+                                    Amount = model.data.amount,
+                                    LastModifiedDate = DateTime.Now,
+                                    CreationDate = DateTime.Now,
+                                    BalanceBeforeTransaction = account.Balance,
+                                    BalanceAfterTransaction = account.Balance + model.data.amount - (decimal)fee,
+                                    Description = model.data.narration,
+                                    ThirdPartyReference = model.data.reference,
+                                    Reference = Guid.NewGuid().ToString(),
+                                    id = Guid.NewGuid(),
+                                    UserId = account.UserId,
+                                    TransactionType = TransactionType.CashOut.ToString(),
+                                    Status = TransactionStatus.Successful.ToString(),
+                                    PostingType = PostingType.Cr.ToString(),
+                                    BeneficiaryBank = model.data.bank_name,
+                                    BeneficiaryAccountNumber = model.data.account_number,
+                                    BeneficiaryBankCode = model.data.bank_code
+                                };
+
+                                //save the transaction
+                                context.Add(transactionn);
+                                
+
+                                // increase wallet balance
+                                account.Balance = account.Balance + model.data.amount - (decimal)fee;
+                                context.Update(account);
+
+                                await context.SaveChangesAsync();
+
+                                //add push notification to the user that the transaction was successful
+                            }
+                        }
+                    }
                 }
 
 
@@ -357,7 +402,8 @@ namespace FYPBackEnd.Services.Implementation
                     var transaction = await context.Transactions.FirstOrDefaultAsync(x => x.Reference == model.data.reference);
                     if (transaction != null)
                     {
-                        //todo: push notification that the transaction has been reversed or requery it       /// let see how it goes
+                        //todo: push notification that the transaction has been reversed               /// let see how it goes
+                        //todo: create reversal function in utility so as to avoid depency injection
                         return ReturnedResponse.SuccessResponse("Webhook successful", null, StatusCodes.Successful);
                     }
                 }

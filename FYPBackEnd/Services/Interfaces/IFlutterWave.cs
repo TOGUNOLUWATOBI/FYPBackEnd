@@ -18,5 +18,6 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> GetPaymentSubaccountBalance(string thirdpartyReference);
         Task<ApiResponse> GetPaymentSubaccount(string thirdpartyReference);
         Task<ApiResponse> GetFees(int amount);
+        Task<ApiResponse> ProcessWebhook(WebhookRequest model);
     }
 }

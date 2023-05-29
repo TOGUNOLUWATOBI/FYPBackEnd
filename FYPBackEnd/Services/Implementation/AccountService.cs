@@ -176,7 +176,9 @@ namespace FYPBackEnd.Services.Implementation
                     BalanceBeforeTransaction = account.Balance,
                     latitude = model.latitude,
                     longitude = model.longitude,
-                    Beneficiary = string.Concat(model.BeneficiaryName, " | ", model.BeneficiaryAccountNumber, " | ", model.BeneficiaryBank, $" | {user.PhoneNumber}"),
+                    Beneficiary = model.BeneficiaryName,
+                    BeneficiaryAccountNumber = model.BeneficiaryAccountNumber,
+                    BeneficiaryBank = model.BeneficiaryBank,
                     BeneficiaryBankCode = model.BeneficiaryBankCode,
                     id = Guid.NewGuid(),
                     PostingType = PostingType.Dr.ToString(),
@@ -225,6 +227,8 @@ namespace FYPBackEnd.Services.Implementation
 
                         transactionDto.BeneficiaryName = model.BeneficiaryName;
                         transactionDto.BeneficiaryBank = model.BeneficiaryBank;
+
+                        //todo: send email and do push notifiication
 
                         return ReturnedResponse.SuccessResponse("Transfer Successfully initiated", transactionDto, StatusCodes.Successful);
                     }

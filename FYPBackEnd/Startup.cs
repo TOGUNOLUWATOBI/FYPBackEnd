@@ -121,6 +121,7 @@ namespace FYPBackEnd
             services.AddScoped<IGoogleDrive, GoogleDrive>();
             services.AddScoped<IOkra, Okra>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IWebhookService, WebhookService>();
             services.AddTransient<IRestClient, RestClient>();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));

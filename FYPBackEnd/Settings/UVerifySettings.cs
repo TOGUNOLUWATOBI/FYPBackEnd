@@ -9,6 +9,6 @@
         public string Passport { get; set; }
         public string DriverLicense { get; set; }
         public string SecretHash { get; set; }
-        public string SaltProperty { get; set; }
+        public int SaltProperty { get; set; }
     }
 }

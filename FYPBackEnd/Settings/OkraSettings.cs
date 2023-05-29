@@ -7,6 +7,6 @@
         public string GetBvn { get; set; }
         public string SecretKey { get; set; }
         public string SecretHash { get; set; }
-        public string SaltProperty { get; set; }
+        public int SaltProperty { get; set; }
     }
 }

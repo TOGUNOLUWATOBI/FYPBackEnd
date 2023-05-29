@@ -1,0 +1,53 @@
+﻿using FYPBackEnd.Data.Constants;
+using FYPBackEnd.Data.Enums;
+using FYPBackEnd.Data.Models.FlutterWave;
+using FYPBackEnd.Data.ReturnedResponse;
+using FYPBackEnd.Services.Interfaces;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
+
+namespace FYPBackEnd.Controllers
+{
+    public class WebhookController : Controller
+    {
+        private readonly IWebhookService webhook;
+        public static IWebHostEnvironment _environment;
+        private readonly ILogger<WebhookController> log;
+
+        public WebhookController(IWebhookService webhook,  ILogger<WebhookController> log, IWebHostEnvironment environment)
+        {
+            this.webhook = webhook;
+            this.log = log;
+            _environment = environment;
+        }
+
+
+        [HttpPost]
+        [Route("api/webhook/flutterwave")]
+        public async Task<IActionResult> FWHandleWebhook([FromBody] WebhookRequest request)
+        {
+            try
+            {
+                var theSecretHash = Request.Headers["verif-hash"];
+                var resp = await webhook.FWHandleWebhook(request, theSecretHash);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Error occured while processing flutterwave webhook");
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured while resolving the webhook: {ex.Message}",null,StatusCodes.ExceptionError));
+            }
+        }
+    }
+}
