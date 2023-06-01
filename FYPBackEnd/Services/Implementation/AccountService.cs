@@ -562,6 +562,39 @@ namespace FYPBackEnd.Services.Implementation
             return ReturnedResponse.SuccessResponse("Banks Fetched", banks, StatusCodes.Successful);
         }
 
+        public async Task<ApiResponse> GetDataBundleByProviders(string serviceProvider)
+        {
+            var biller_code = "";
+            if (serviceProvider == "Airtel")
+            {
+                biller_code = ServiceProvider.Airtel;
+                var resp = await flutterWave.GetBillCategories(biller_code, "1");
+                return resp;
+            }
+            if (serviceProvider == "GLO")
+            {
+                biller_code = ServiceProvider.GLO;
+                var resp = await flutterWave.GetBillCategories(biller_code, "1");
+                return resp;
+            }
+            if (serviceProvider == "MTN")
+            {
+                biller_code = ServiceProvider.MTN;
+                var resp = await flutterWave.GetBillCategories(biller_code, "1");
+                return resp;
+            }
+            if (serviceProvider == "NMobile")
+            {
+                biller_code = ServiceProvider.NMobile;
+                var resp = await flutterWave.GetBillCategories(biller_code, "1");
+                return resp;
+            }
+            else
+            {
+                return ReturnedResponse.ErrorResponse("Service provider doesn't exists", null, StatusCodes.GeneralError);
+            }
+        }
+        
         public async Task<ApiResponse> PopulateBankTable()
         {
 

@@ -231,7 +231,7 @@ namespace FYPBackEnd.Services.Implementation
             return ReturnedResponse.ErrorResponse("flutterwave transfer couldn't be initiated.", response, StatusCodes.ThirdPartyError);
         }
 
-        public async Task<ApiResponse> GetBillCategories ()
+        public async Task<ApiResponse> GetBillCategories (string biller_code, string data_bundle)
         {
             var response = new GetBillCategoriesResponseModel();
             var getBillCategoriesUri = string.Concat(settings.BaseUrl, settings.GetBillCategories);
@@ -239,6 +239,15 @@ namespace FYPBackEnd.Services.Implementation
             var req = new RestRequest(Method.GET);
 
             req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
+            if(!string.IsNullOrEmpty(biller_code))
+            {
+                req.AddQueryParameter("biller_code", biller_code);
+            }
+            if (!string.IsNullOrEmpty(data_bundle))
+            {                         
+                req.AddQueryParameter("data_bundle", data_bundle);
+            }
+            req.AddQueryParameter("country", "NG");
             var resp = await client.ExecuteAsync(req);
 
             if (resp != null)

@@ -9,7 +9,7 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> CreateVirtualStaticAccount(CreateVIrtualRequestModel model);
         Task<ApiResponse> GetVirtualStaticAccount(string orderRef);
         Task<ApiResponse> InitiateTransfer(InitiateTransferRequestModel model);
-        Task<ApiResponse> GetBillCategories();
+        Task<ApiResponse> GetBillCategories(string biller_code, string data_bundle);
         Task<ApiResponse> PayBill(PayBillRequestModel model);
         Task<ApiResponse> ValidateBillPayment(ValidateBillRequestModel model);
         Task<ApiResponse> GetAllBanks();

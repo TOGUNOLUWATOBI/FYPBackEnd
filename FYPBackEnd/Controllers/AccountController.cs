@@ -378,6 +378,34 @@ namespace FYPBackEnd.Controllers
         }
 
 
+
+        [HttpGet]
+        [Route("api/v1/GetDataBundles")]
+        public async Task<IActionResult> GetDataBundles(string serviceProvier)
+        {
+            try
+            {
+
+                var resp = await accountService.GetDataBundleByProviders(serviceProvier);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in Getting Data Bundles", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error has occured : {ex.Message}", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
         [HttpPost]
         [Route("api/v1/PopulateBankTable")]
         public async Task<IActionResult> PopulateBankTable()
