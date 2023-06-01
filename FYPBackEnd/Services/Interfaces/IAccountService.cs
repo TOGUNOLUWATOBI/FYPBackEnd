@@ -17,6 +17,7 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> ChangePanicModePin(ChangePanicModePinModel model, string userId);
         Task<ApiResponse> CheckTransactionFee(int Amount);
         Task<ApiResponse> validateAccountDetails(VerifyAccountUserRequestModel model);
+        Task<ApiResponse> GetAllBanksWithCode();
         Task<ApiResponse> PopulateBankTable();
     }
 }

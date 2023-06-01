@@ -555,6 +555,13 @@ namespace FYPBackEnd.Services.Implementation
             return resp;
         }
 
+        public async Task<ApiResponse> GetAllBanksWithCode ()
+        {
+            var banks = await context.Banks.Select(x=> new { x.BankName, x.BankCode }).ToListAsync();
+
+            return ReturnedResponse.SuccessResponse("Banks Fetched", banks, StatusCodes.Successful);
+        }
+
         public async Task<ApiResponse> PopulateBankTable()
         {
 

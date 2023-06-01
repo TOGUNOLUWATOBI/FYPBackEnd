@@ -242,6 +242,7 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("api/v1/ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ChangePasswordRequestModel model)
@@ -315,6 +316,7 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("api/v1/ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(string email)
