@@ -331,33 +331,6 @@ namespace FYPBackEnd.Controllers
                     return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
                 }
                 
-                var resp = await accountService.GetAllBanksWithCode();
-                if (resp.Status == Status.Successful.ToString())
-                {
-                    return Ok(resp);
-                }
-                else
-                {
-                    return BadRequest(resp);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
-                log.LogInformation(string.Concat($"Error occured in getting all banks", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse($"an error has occured : {ex.Message}", null, StatusCodes.ExceptionError));
-            }
-        }
-
-
-        [HttpGet]
-        [Route("api/v1/banks")]
-        public async Task<IActionResult> GetAllBanks()
-        {
-            try
-            {
-                
                 var resp = await accountService.validateAccountDetails(model);
                 if (resp.Status == Status.Successful.ToString())
                 {
@@ -374,6 +347,33 @@ namespace FYPBackEnd.Controllers
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
                 log.LogInformation(string.Concat($"Error occured in verifying account details", errMessage));
                 return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
+        [HttpGet]
+        [Route("api/v1/banks")]
+        public async Task<IActionResult> GetAllBanks()
+        {
+            try
+            {
+                
+                var resp = await accountService.GetAllBanksWithCode();
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in getting banks", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error has occured : {ex.Message}", null, StatusCodes.ExceptionError));
             }
         }
 
