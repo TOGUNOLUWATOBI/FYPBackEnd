@@ -227,7 +227,7 @@ namespace FYPBackEnd.Services.Implementation
         }
 
 
-        //todo: check if this service is working
+        
         public async Task<ApiResponse> ResetPassword(ChangePasswordRequestModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -243,7 +243,7 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             await _userManager.RemovePasswordAsync(user);
-            await _userManager.ChangePasswordAsync(user, null, model.Password);
+            await _userManager.AddPasswordAsync(user, model.Password);
 
             return ReturnedResponse.SuccessResponse("Password has been reset", null, StatusCodes.Successful);
         }

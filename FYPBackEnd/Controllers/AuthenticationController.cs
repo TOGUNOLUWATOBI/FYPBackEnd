@@ -209,6 +209,8 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+
+        [AllowAnonymous]
         [HttpPost]
         [Route("api/v1/VerifyOtp")]
         public async Task<IActionResult> VerifyOtp(string otpCode)
