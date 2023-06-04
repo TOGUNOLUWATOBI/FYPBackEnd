@@ -1,4 +1,5 @@
-﻿using FYPBackEnd.Data.Constants;
+﻿using FYPBackEnd.Data;
+using FYPBackEnd.Data.Constants;
 using FYPBackEnd.Data.Enums;
 using FYPBackEnd.Data.Models.FlutterWave;
 using FYPBackEnd.Data.ReturnedResponse;
@@ -18,6 +19,7 @@ namespace FYPBackEnd.Controllers
     {
         private readonly IWebhookService webhook;
         public static IWebHostEnvironment _environment;
+        private readonly ApplicationDbContext context;
         private readonly ILogger<WebhookController> log;
 
         public WebhookController(IWebhookService webhook,  ILogger<WebhookController> log, IWebHostEnvironment environment)
@@ -34,6 +36,11 @@ namespace FYPBackEnd.Controllers
         {
             try
             {
+                context.FW.Add(new Data.Entities.FlutterwaveWebhook()
+                {
+                    webhook = request.ToString(),
+                });
+                await context.SaveChangesAsync();
                 var theSecretHash = Request.Headers["verif-hash"];
                 var resp = await webhook.FWHandleWebhook(request, theSecretHash);
                 if (resp.Status == Status.Successful.ToString())
