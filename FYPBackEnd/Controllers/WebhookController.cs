@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -42,7 +43,7 @@ namespace FYPBackEnd.Controllers
                     id = Guid.NewGuid(),
                     CreationDate = DateTime.Now,
                     LastModifiedDate = DateTime.Now,
-                    webhook = request.ToString(),
+                    webhook = JsonConvert.SerializeObject(request)
                 };
                 await context.FW.AddAsync(fw);
                 await context.SaveChangesAsync();
