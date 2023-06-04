@@ -346,6 +346,14 @@ namespace FYPBackEnd.Services.Implementation
 
         public async Task<ApiResponse> ProcessWebhook(WebhookRequest model)
         {
+
+            var fw = new FlutterwaveWebhook()
+            {
+                webhook = model.ToString()
+            };
+
+            await context.FW.AddAsync(fw);
+            await context.SaveChangesAsync();
             //todo: finish up on this
             if(model.Event == "transfer.completed")
             {

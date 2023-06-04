@@ -3,6 +3,7 @@ using FYPBackEnd.Data.Enums;
 using FYPBackEnd.Data.Models.FlutterWave;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,7 @@ namespace FYPBackEnd.Controllers
             _environment = environment;
         }
 
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("api/v1/flutterwave")]
         public async Task<IActionResult> FWHandleWebhook([FromBody] WebhookRequest request)
