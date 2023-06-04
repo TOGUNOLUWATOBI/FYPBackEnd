@@ -543,11 +543,13 @@ namespace FYPBackEnd.Services.Implementation
 
             if(resp.Status == Status.Successful.ToString()) 
             {
+                var data = (AccountNameVerificationResponse)resp.Data;
                 var verifyNameResponse = new VerifyAccountUserResponseModel()
                 {
                     account_number = model.account_number,
                     bank_code = bank.BankCode,
                     bank_name = bank.BankName,
+                    AccountName = data.data.account_name
                 };
 
                 return ReturnedResponse.SuccessResponse("Account Details Fetched", verifyNameResponse, StatusCodes.Successful);
