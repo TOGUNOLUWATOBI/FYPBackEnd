@@ -38,6 +38,9 @@ namespace FYPBackEnd.Controllers
             {
                 context.FW.Add(new Data.Entities.FlutterwaveWebhook()
                 {
+                    id = Guid.NewGuid(),
+                    CreationDate = DateTime.Now,
+                    LastModifiedDate = DateTime.Now,
                     webhook = request.ToString(),
                 });
                 await context.SaveChangesAsync();
