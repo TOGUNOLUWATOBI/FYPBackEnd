@@ -22,11 +22,12 @@ namespace FYPBackEnd.Controllers
         private readonly ApplicationDbContext context;
         private readonly ILogger<WebhookController> log;
 
-        public WebhookController(IWebhookService webhook,  ILogger<WebhookController> log, IWebHostEnvironment environment)
+        public WebhookController(IWebhookService webhook, ILogger<WebhookController> log, IWebHostEnvironment environment, ApplicationDbContext context)
         {
             this.webhook = webhook;
             this.log = log;
             _environment = environment;
+            this.context = context;
         }
 
         [AllowAnonymous]
@@ -36,13 +37,14 @@ namespace FYPBackEnd.Controllers
         {
             try
             {
-                context.FW.Add(new Data.Entities.FlutterwaveWebhook()
+                var fw = new Data.Entities.FlutterwaveWebhook()
                 {
                     id = Guid.NewGuid(),
                     CreationDate = DateTime.Now,
                     LastModifiedDate = DateTime.Now,
                     webhook = request.ToString(),
-                });
+                };
+                await context.FW.AddAsync(fw);
                 await context.SaveChangesAsync();
                 var theSecretHash = Request.Headers["verif-hash"];
                 var resp = await webhook.FWHandleWebhook(request, theSecretHash);
