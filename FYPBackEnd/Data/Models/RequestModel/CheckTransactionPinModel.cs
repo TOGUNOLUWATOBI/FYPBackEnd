@@ -17,12 +17,6 @@
 
     }
 
-
-    public class CheckPanicModePinModel
-    {
-        public string TrxPin { get; set; }
-    }
-
     public class AddPanicModePinModel
     {
         public string PanicPin { get; set; }
