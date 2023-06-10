@@ -35,6 +35,8 @@ namespace FYPBackEnd.Services.Implementation
             var client = new RestClient(verifyBvnUri);
             var req = new RestRequest(Method.POST);
 
+            model.isSubjectConsent = true;
+
             req.AddHeader("token", $"Bearer {settings.ApiKey}");
             req.AddJsonBody(model);
 
@@ -58,7 +60,7 @@ namespace FYPBackEnd.Services.Implementation
         public async Task<ApiResponse> VerifyNin(NinVerificationRequestModel model)
         {
             string verifyNinUri = string.Concat(settings.BaseUrl, settings.NIN);
-
+            model.isSubjectConsent = true;
             NinVerifyResponseModel response = new NinVerifyResponseModel();
             var client = new RestClient(verifyNinUri);
             var req = new RestRequest(Method.POST);

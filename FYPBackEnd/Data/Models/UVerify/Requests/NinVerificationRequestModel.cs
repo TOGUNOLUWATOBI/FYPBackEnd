@@ -2,11 +2,28 @@
 {
     public class NinVerificationRequestModel
     {
-        public string report_type { get; set; }
-        public string type { get; set; }
-        public string reference { get; set; }
-        public string image { get; set; }
-        public bool subject_consent { get; set; }
+        public string id { get; set; }
+        public bool isSubjectConsent { get; set; }
+        public Validations validations { get; set; }
     }
+
+    public class Validations
+    {
+        public Data data { get; set; }
+        public Selfie selfie { get; set; }
+    }
+
+    public class Data
+    {
+        public string lastName { get; set; }
+        public string firstName { get; set; }
+        public string dateOfBirth { get; set; }
+    }
+
+    public class Selfie
+    {
+        public string image { get; set; }
+    }
+
 
 }
