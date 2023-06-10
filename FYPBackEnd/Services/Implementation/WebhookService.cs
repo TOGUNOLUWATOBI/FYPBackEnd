@@ -25,19 +25,8 @@ namespace FYPBackEnd.Services.Implementation
             this.flutterWaveSettings = flutterWaveSettings.Value;
         }
 
-        public async Task<ApiResponse> FWHandleWebhook(WebhookRequest request, string theSecretHash)
+        public async Task<ApiResponse> FWHandleWebhook(WebhookRequest request)
         {
-
-            //check to make sure that the webhook is from fluttereave using the secret hash
-            var util = new CryptoServices(flutterWaveSettings.SecretHash, flutterWaveSettings.SaltProperty);
-
-            var hash = util.ComputeSaltedHash();
-
-            if(hash != theSecretHash)
-            {
-                return ReturnedResponse.ErrorResponse("The webhook is not from the right source ", request, StatusCodes.GeneralError);
-            }
-
             var response = await flutterwave.ProcessWebhook(request);
             return response;
         }

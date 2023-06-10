@@ -6,6 +6,6 @@ namespace FYPBackEnd.Services.Interfaces
 {
     public interface IWebhookService
     {
-        Task<ApiResponse> FWHandleWebhook(WebhookRequest request, string theSecretHash);
+        Task<ApiResponse> FWHandleWebhook(WebhookRequest request);
     }
 }

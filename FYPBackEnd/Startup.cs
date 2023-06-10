@@ -144,6 +144,7 @@ namespace FYPBackEnd
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.User.RequireUniqueEmail = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
             }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
         }
 
