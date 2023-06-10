@@ -10,6 +10,7 @@
 
     public enum TransactionStatus
     {
+        Completed,
         Successful,
         Pending,
         Failed

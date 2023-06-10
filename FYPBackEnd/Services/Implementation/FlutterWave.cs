@@ -364,6 +364,10 @@ namespace FYPBackEnd.Services.Implementation
                     var transaction = await context.Transactions.FirstOrDefaultAsync(x=> x.Reference == model.data.reference);
                     if(transaction != null)
                     {
+                        //update transaction to completed
+                        transaction.Status = TransactionStatus.Completed.ToString();
+                        context.Update(transaction);
+                        await context.SaveChangesAsync();
                         //todo: push notification that the transaction has been succesful and should reach the beneficiary soon/immediately
                         return ReturnedResponse.SuccessResponse("Webhook successful", null, StatusCodes.Successful);
                     }
