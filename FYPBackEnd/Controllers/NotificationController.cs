@@ -3,6 +3,7 @@ using FYPBackEnd.Data.Enums;
 using FYPBackEnd.Data.Models.Notification;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,7 @@ namespace FYPBackEnd.Controllers
 
         [Route("api/v1/send")]
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> SendNotification(NotificationModel notificationModel)
         {
             try
