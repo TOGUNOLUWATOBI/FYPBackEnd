@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace epAgentAuthentication.Services
+namespace FYPBackEnd.Services.Implementation
 {
     public class CryptoServices
     {
@@ -37,7 +37,7 @@ namespace epAgentAuthentication.Services
 
         public CryptoServices(string key)
         {
-            if (!String.IsNullOrEmpty(key))
+            if (!string.IsNullOrEmpty(key))
             {
                 if (key.Length == 24)
                 {
@@ -122,7 +122,7 @@ namespace epAgentAuthentication.Services
             byte[] dataToDecrypt = Convert.FromBase64String(cipherText);
 
             MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
-            byte[] keyB = hashmd5.ComputeHash(UTF8Encoding.UTF8.GetBytes("6DB18246D230DF0B36C01DB9"));
+            byte[] keyB = hashmd5.ComputeHash(Encoding.UTF8.GetBytes("6DB18246D230DF0B36C01DB9"));
             hashmd5.Clear();
 
             var tdes = new TripleDESCryptoServiceProvider { Key = keyB, Mode = CipherMode.CBC, IV = new byte[8], Padding = PaddingMode.PKCS7 };
@@ -133,18 +133,18 @@ namespace epAgentAuthentication.Services
                 tdes.Clear();
             }
 
-            return UTF8Encoding.UTF8.GetString(result);
+            return Encoding.UTF8.GetString(result);
         }
 
         public string EncryptTripleDES(string cipherText)
         {
-            byte[] byt = System.Text.Encoding.UTF8.GetBytes(cipherText);
+            byte[] byt = Encoding.UTF8.GetBytes(cipherText);
             string mdo = Convert.ToBase64String(byt);
             byte[] result;
-            byte[] dataToEncrypt = System.Text.Encoding.UTF8.GetBytes(cipherText);
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes(cipherText);
 
             MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
-            byte[] keyB = hashmd5.ComputeHash(UTF8Encoding.UTF8.GetBytes("6DB18246D230DF0B36C01DB9"));
+            byte[] keyB = hashmd5.ComputeHash(Encoding.UTF8.GetBytes("6DB18246D230DF0B36C01DB9"));
             hashmd5.Clear();
 
             var tdes = new TripleDESCryptoServiceProvider { Key = keyB, Mode = CipherMode.CBC, IV = new byte[8], Padding = PaddingMode.PKCS7 };
@@ -160,20 +160,20 @@ namespace epAgentAuthentication.Services
 
         public string Encode(string clearText)
         {
-            byte[] encoded = System.Text.Encoding.UTF8.GetBytes(clearText);
+            byte[] encoded = Encoding.UTF8.GetBytes(clearText);
             return Convert.ToBase64String(encoded);
         }
 
         public string Decode(string encodedText)
         {
             byte[] encoded = Convert.FromBase64String(encodedText);
-            return System.Text.Encoding.UTF8.GetString(encoded);
+            return Encoding.UTF8.GetString(encoded);
         }
 
         public static string CreateRandomPassword(int PasswordLength)
         {
-            String _allowedChars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ23456789";
-            Byte[] randomBytes = new Byte[PasswordLength];
+            string _allowedChars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ23456789";
+            byte[] randomBytes = new byte[PasswordLength];
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             rng.GetBytes(randomBytes);
             char[] chars = new char[PasswordLength];
@@ -181,7 +181,7 @@ namespace epAgentAuthentication.Services
 
             for (int i = 0; i < PasswordLength; i++)
             {
-                chars[i] = _allowedChars[(int)randomBytes[i] % allowedCharCount];
+                chars[i] = _allowedChars[randomBytes[i] % allowedCharCount];
             }
 
             return new string(chars);
@@ -189,34 +189,34 @@ namespace epAgentAuthentication.Services
 
         public static int CreateRandomSalt()
         {
-            Byte[] _saltBytes = new Byte[4];
+            byte[] _saltBytes = new byte[4];
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             rng.GetBytes(_saltBytes);
 
-            return ((((int)_saltBytes[0]) << 24) + (((int)_saltBytes[1]) << 16) +
-              (((int)_saltBytes[2]) << 8) + ((int)_saltBytes[3]));
+            return (_saltBytes[0] << 24) + (_saltBytes[1] << 16) +
+              (_saltBytes[2] << 8) + _saltBytes[3];
         }
 
         public string ComputeSaltedHash()
         {
             // Create Byte array of password string
             ASCIIEncoding encoder = new ASCIIEncoding();
-            Byte[] _secretBytes = encoder.GetBytes(_password);
+            byte[] _secretBytes = encoder.GetBytes(_password);
 
             // Create a new salt
-            Byte[] _saltBytes = new Byte[4];
+            byte[] _saltBytes = new byte[4];
             _saltBytes[0] = (byte)(_salt >> 24);
             _saltBytes[1] = (byte)(_salt >> 16);
             _saltBytes[2] = (byte)(_salt >> 8);
-            _saltBytes[3] = (byte)(_salt);
+            _saltBytes[3] = (byte)_salt;
 
             // append the two arrays
-            Byte[] toHash = new Byte[_secretBytes.Length + _saltBytes.Length];
+            byte[] toHash = new byte[_secretBytes.Length + _saltBytes.Length];
             Array.Copy(_secretBytes, 0, toHash, 0, _secretBytes.Length);
             Array.Copy(_saltBytes, 0, toHash, _secretBytes.Length, _saltBytes.Length);
 
             SHA1 sha1 = SHA1.Create();
-            Byte[] computedHash = sha1.ComputeHash(toHash);
+            byte[] computedHash = sha1.ComputeHash(toHash);
 
             return encoder.GetString(computedHash);
         }
