@@ -37,7 +37,7 @@ namespace FYPBackEnd.Services.Implementation
 
             model.isSubjectConsent = true;
 
-            req.AddHeader("token", $"Bearer {settings.ApiKey}");
+            req.AddHeader("token", $"{settings.ApiKey}");
             req.AddJsonBody(model);
 
             var resp = await client.ExecuteAsync(req);
@@ -65,11 +65,7 @@ namespace FYPBackEnd.Services.Implementation
             var client = new RestClient(verifyNinUri);
             var req = new RestRequest(Method.POST);
 
-            model.type = "nin_facial";
-            model.report_type = "identity";
-            model.subject_consent = true;
-
-            req.AddHeader("token", $"Bearer {settings.ApiKey}");
+            req.AddHeader("token", $"{settings.ApiKey}");
             req.AddJsonBody(model);
 
             var resp = await client.ExecuteAsync(req);
@@ -97,7 +93,7 @@ namespace FYPBackEnd.Services.Implementation
             var client = new RestClient(verifyPassportUri);
             var req = new RestRequest(Method.POST);
 
-            req.AddHeader("token", $"Bearer {settings.ApiKey}");
+            req.AddHeader("token", $"{settings.ApiKey}");
             req.AddJsonBody(model);
 
             var resp = await client.ExecuteAsync(req);
@@ -125,7 +121,7 @@ namespace FYPBackEnd.Services.Implementation
             var client = new RestClient(verifyDriverLicenseUri);
             var req = new RestRequest(Method.POST);
 
-            req.AddHeader("token", $"Bearer {settings.ApiKey}");
+            req.AddHeader("token", $"{settings.ApiKey}");
             req.AddJsonBody(model);
 
             var resp = await client.ExecuteAsync(req);
