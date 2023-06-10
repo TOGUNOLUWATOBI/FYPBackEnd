@@ -43,13 +43,17 @@ namespace FYPBackEnd.Services.Implementation
                     httpClient.DefaultRequestHeaders.Accept
                             .Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    DataPayload dataPayload = new DataPayload();
-                    dataPayload.Title = notificationModel.Title;
-                    dataPayload.Body = notificationModel.Body;
+                    DataPayload dataPayload = new DataPayload
+                    {
+                        Title = notificationModel.Title,
+                        Body = notificationModel.Body
+                    };
 
-                    GoogleNotification notification = new GoogleNotification();
-                    notification.Data = dataPayload;
-                    notification.Notification = dataPayload;
+                    GoogleNotification notification = new GoogleNotification
+                    {
+                        Data = dataPayload,
+                        Notification = dataPayload
+                    };
 
                     var fcm = new FcmSender(settings, httpClient);
                     var fcmSendResponse = await fcm.SendAsync(deviceToken, notification);
@@ -73,7 +77,7 @@ namespace FYPBackEnd.Services.Implementation
             }
             catch (Exception ex)
             {
-                return ReturnedResponse.ErrorResponse("An error occured", null, StatusCodes.GeneralError);
+                return ReturnedResponse.ErrorResponse($"An error occured; {ex.Message}", null, StatusCodes.GeneralError);
             }
         }
     }
