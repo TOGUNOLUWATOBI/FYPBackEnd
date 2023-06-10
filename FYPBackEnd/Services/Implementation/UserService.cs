@@ -18,7 +18,6 @@ using Microsoft.Extensions.Options;
 using FYPBackEnd.Data.Models.ResponseModel;
 using FYPBackEnd.Settings;
 using FYPBackEnd.Data.Constants;
-using epAgentAuthentication.Services;
 using System.Collections.Generic;
 using System.Security.Claims;
 

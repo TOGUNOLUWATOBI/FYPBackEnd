@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using epAgentAuthentication.Services;
 using FYPBackEnd.Core;
 using FYPBackEnd.Data;
 using FYPBackEnd.Data.Constants;
