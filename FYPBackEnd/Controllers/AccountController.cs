@@ -406,6 +406,33 @@ namespace FYPBackEnd.Controllers
         }
 
 
+        [HttpGet]
+        [Route("api/v1/dashboard")]
+        public async Task<IActionResult> GetUserDashboard()
+        {
+            try
+            {
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+
+                var resp = await accountService.GetUserDashboard(theUserId);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in getting user dashboard", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error has occured : {ex.Message}", null, StatusCodes.ExceptionError));
+            }
+        }
+
 
         [HttpGet]
         [Route("api/v1/GetDataBundles")]

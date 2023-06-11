@@ -20,6 +20,7 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> validateAccountDetails(VerifyAccountUserRequestModel model);
         Task<ApiResponse> GetAllBanksWithCode();
         Task<ApiResponse> FetchUserLastTrasnasctions(string theUserId, int count = 20);
+        Task<ApiResponse> GetUserDashboard(string theUserId);
         Task<ApiResponse> PopulateBankTable();
     }
 }

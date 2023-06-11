@@ -2,6 +2,7 @@
 using FYPBackEnd.Data.Entities;
 using FYPBackEnd.Data.Models.DTO;
 using FYPBackEnd.Data.Models.ViewModel;
+using System.Collections.Generic;
 
 namespace FYPBackEnd.Core
 {
@@ -11,7 +12,8 @@ namespace FYPBackEnd.Core
         {
             CreateMap<ApplicationUser, UserDto>();
             CreateMap<Account, AccountDto>();
-            CreateMap<Transaction, TransferDto>();
+            CreateMap<Transaction, TransactionDto>();
+            
         }
     }
 }

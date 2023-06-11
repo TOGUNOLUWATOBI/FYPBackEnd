@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
@@ -222,7 +223,7 @@ namespace FYPBackEnd.Services.Implementation
                         context.Update(transaction);
                         await context.SaveChangesAsync();
 
-                        var transactionDto = map.Map<TransferDto>(transaction);
+                        var transactionDto = map.Map<TransactionDto>(transaction);
 
                         transactionDto.BeneficiaryName = model.BeneficiaryName;
                         transactionDto.BeneficiaryBank = model.BeneficiaryBank;
@@ -355,7 +356,7 @@ namespace FYPBackEnd.Services.Implementation
                                 context.Update(transaction);
                                 await context.SaveChangesAsync();
 
-                                var transactionDto = map.Map<TransferDto>(transaction);
+                                var transactionDto = map.Map<TransactionDto>(transaction);
 
                                 transactionDto.PhoneNumber = model.Customer;
 
@@ -648,6 +649,32 @@ namespace FYPBackEnd.Services.Implementation
             var result  = transactions.Take(count).ToList();
 
             return ReturnedResponse.SuccessResponse("Transactions retrieved successfully", result, StatusCodes.Successful);
+        }
+
+
+        public async Task<ApiResponse> GetUserDashboard(string theUserId)
+        {
+            var user = await userManager.FindByIdAsync(theUserId);
+            if (user == null)
+            {
+                return ReturnedResponse.ErrorResponse("User doesn't exist", null, StatusCodes.NoRecordFound);
+            }
+
+            var account = await context.Accounts.FirstOrDefaultAsync(x => x.UserId == theUserId);
+            if (account == null)
+            {
+                return ReturnedResponse.ErrorResponse("An error occurred User account doesn't exist", null, StatusCodes.NoRecordFound);
+            }
+
+            var resp = await FetchUserLastTrasnasctions(theUserId);
+            var transactions = (List<Transaction>)resp.Data;
+
+            return ReturnedResponse.SuccessResponse("Dashboard details", new
+            {
+                Name = user.FirstName,
+                Balance = account.Balance,
+                Transactions = map.Map<List<TransactionDto>>(transactions)
+            }, StatusCodes.Successful);
         }
 
         private async Task<string> GenerateWalletAccountNumber()
