@@ -378,6 +378,34 @@ namespace FYPBackEnd.Controllers
         }
 
 
+        [HttpGet]
+        [Route("api/v1/transactions")]
+        public async Task<IActionResult> GetAllTransactions(int count = 20)
+        {
+            try
+            {
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+
+                var resp = await accountService.FetchUserLastTrasnasctions(theUserId,count);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in getting last transactions", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error has occured : {ex.Message}", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
 
         [HttpGet]
         [Route("api/v1/GetDataBundles")]

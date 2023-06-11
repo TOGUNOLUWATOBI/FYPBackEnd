@@ -629,14 +629,26 @@ namespace FYPBackEnd.Services.Implementation
             return ReturnedResponse.SuccessResponse("Bank Table Populated", null, StatusCodes.Successful);
         }
 
-        //public async Task<ApiResponse> FetchUserLastTrasnasction(string theUserId)
-        //{
-        //    var user = await userManager.FindByIdAsync(theUserId);
-        //    if (user == null)
-        //    {
-        //        return ReturnedResponse.ErrorResponse("User doesn't exist", null, StatusCodes.NoRecordFound);
-        //    }
-        //}
+
+        // use this endpoint to get the last 20
+        public async Task<ApiResponse> FetchUserLastTrasnasctions(string theUserId, int count = 20)
+        {
+            var user = await userManager.FindByIdAsync(theUserId);
+            if (user == null)
+            {
+                return ReturnedResponse.ErrorResponse("User doesn't exist", null, StatusCodes.NoRecordFound);
+            }
+
+            var transactions = await context.Transactions.Where(x=> x.UserId == theUserId).ToListAsync();
+
+            //order in descending by date created
+            transactions = transactions.OrderByDescending(x=> x.CreationDate).ToList();
+
+            //take the first count numbers
+            var result  = transactions.Take(count).ToList();
+
+            return ReturnedResponse.SuccessResponse("Transactions retrieved successfully", result, StatusCodes.Successful);
+        }
 
         private async Task<string> GenerateWalletAccountNumber()
         {
