@@ -5,7 +5,7 @@ namespace FYPBackEnd.Data.Models.DTO
     public class TransactionDto
     {
         public decimal Amount { get; set; }
-        public string Referebce { get; set; }
+        public string Reference { get; set; }
         public string Id { get; set; }
         public DateTime? CreationDate { get; set; }
         public string PostingType { get; set; } // cr, dr

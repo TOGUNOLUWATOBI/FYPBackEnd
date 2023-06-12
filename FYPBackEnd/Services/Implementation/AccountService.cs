@@ -669,7 +669,7 @@ namespace FYPBackEnd.Services.Implementation
             var resp = await FetchUserLastTrasnasctions(theUserId);
             var transactions = (List<Transaction>)resp.Data;
 
-            return ReturnedResponse.SuccessResponse("Dashboard details", new
+            return ReturnedResponse.SuccessResponse("Dashboard details", new DashboardModel
             {
                 Name = user.FirstName,
                 Balance = account.Balance,
