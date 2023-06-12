@@ -298,7 +298,7 @@ namespace FYPBackEnd.Controllers
                                             .Select(e => e.ErrorMessage));
                     return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
                 }
-                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+                
                 var resp = await accountService.CheckTransactionFee(amount);
                 if (resp.Status == Status.Successful.ToString())
                 {
