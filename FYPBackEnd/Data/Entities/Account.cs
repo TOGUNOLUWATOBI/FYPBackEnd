@@ -11,6 +11,8 @@ namespace FYPBackEnd.Data.Entities
         public string ThirdPartyAccountNumber { get; set; }
         public string ThirdPartyReference { get; set; }
         public string ThirdPartyBankName { get; set; }
+        public int Tier { get; set; }
+        public int Limit { get; set; }
         public string ThirdPartyBankCode { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal Balance { get; set; }
