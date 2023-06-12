@@ -4,6 +4,7 @@ using FYPBackEnd.Data.Models.RequestModel;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Implementation;
 using FYPBackEnd.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -280,6 +281,8 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+
+        [AllowAnonymous]
         [HttpGet]
         [Route("api/v1/GetAmountFees")]
 
@@ -314,9 +317,9 @@ namespace FYPBackEnd.Controllers
                 return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
             }
         }
-       
 
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("api/v1/VerifyAccountDetaails")]
         public async Task<IActionResult> VerifyAccountDetaails(VerifyAccountUserRequestModel model)
@@ -332,6 +335,78 @@ namespace FYPBackEnd.Controllers
                 }
                 
                 var resp = await accountService.validateAccountDetails(model);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in verifying account details", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
+        [HttpGet]
+        [Route("api/v1/UserAccountDetails")]
+        public async Task<IActionResult> GetUserAccountDetails()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+
+                string theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+
+                var resp = await accountService.GetUserAccountDetails(theUserId);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in verifying account details", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
+        [HttpGet]
+        [Route("api/v1/FundWalletDetails")]
+        public async Task<IActionResult> GetFundWalletDetails()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+
+                string theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+
+                var resp = await accountService.GetFundWalletDetails(theUserId);
                 if (resp.Status == Status.Successful.ToString())
                 {
                     return Ok(resp);

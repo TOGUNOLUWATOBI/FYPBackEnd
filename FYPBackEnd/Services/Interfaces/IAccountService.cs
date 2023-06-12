@@ -13,6 +13,8 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> BuyAirtimeData(BuyAirtimeRequestModel model, string userId);
         Task<ApiResponse> CheckTransactionPanicPin(CheckTransactionPinModel model, string userId);
         Task<ApiResponse> ChangeTransactionPin(ChangeTransactionPinModel model, string userId);
+        Task<ApiResponse> GetUserAccountDetails(string theUserId);
+        Task<ApiResponse> GetFundWalletDetails(string theUserId);
         Task<ApiResponse> AddTransactionPin(AddTransactionPinModel model, string userId);
         Task<ApiResponse> ChangePanicModePin(ChangePanicModePinModel model, string userId);
         Task<ApiResponse> CheckTransactionFee(int Amount);

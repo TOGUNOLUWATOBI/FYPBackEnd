@@ -457,6 +457,76 @@ namespace FYPBackEnd.Services.Implementation
         }
 
 
+        public async Task<ApiResponse> GetFundWalletDetails(string theUserId)
+        {
+            var user = await userManager.FindByIdAsync(theUserId);
+            if(user == null)
+                return ReturnedResponse.ErrorResponse("User not found", null, StatusCodes.GeneralError);
+
+            var account = await context.Accounts.FirstOrDefaultAsync(x => x.UserId == theUserId);
+            if(account == null)
+                return ReturnedResponse.ErrorResponse("Account not found", null, StatusCodes.GeneralError);
+
+            var fundWallet = new FundWalletDto()
+            {
+               accountNumber = account.ThirdPartyAccountNumber,
+               BankName = account.ThirdPartyBankName,
+               FullName = user.FirstName + " " + user.LastName,
+            };
+
+            return ReturnedResponse.SuccessResponse("Fund wallet details retrieved successfully", fundWallet, StatusCodes.Successful);
+        }
+
+        public async Task<ApiResponse> GetUserAccountDetails(string theUserId)
+        {
+            var user = await userManager.FindByIdAsync(theUserId);
+            if (user == null)
+                return ReturnedResponse.ErrorResponse("User not found", null, StatusCodes.GeneralError);
+
+            var account = await context.Accounts.FirstOrDefaultAsync(x => x.UserId == theUserId);
+            if (account == null)
+                return ReturnedResponse.ErrorResponse("Account not found", null, StatusCodes.GeneralError);
+            
+            
+            var limit = 0;
+            if (account.Limit == 0 )
+            {
+
+                if (account.Tier == 0)
+                {
+                    account.Limit = 50000;
+                }
+
+                if (account.Tier == 1)
+                {
+                    account.Limit = 500000;
+                }
+
+                if (account.Tier == 3)
+                {
+                    account.Limit = 2000000;
+                }
+
+                context.Update(account);
+                await context.SaveChangesAsync();
+            }
+
+            limit = account.Limit;
+            
+
+            var accountDetails  = new AccountDetails()
+            {
+                accountNumber = account.ThirdPartyAccountNumber,
+                BankName = account.ThirdPartyBankName,
+                FullName = user.FirstName + " " + user.LastName,
+                Tier = account.Tier,
+                Limit = limit
+                
+            };
+
+            return ReturnedResponse.SuccessResponse("Fund wallet details retrieved successfully", accountDetails, StatusCodes.Successful);
+        }
+
 
         public async Task<ApiResponse> ChangePanicModePin(ChangePanicModePinModel model, string userId)
         {
