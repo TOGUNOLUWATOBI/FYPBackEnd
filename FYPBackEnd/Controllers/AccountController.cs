@@ -320,9 +320,9 @@ namespace FYPBackEnd.Controllers
 
 
         [AllowAnonymous]
-        [HttpGet]
-        [Route("api/v1/VerifyAccountDetaails")]
-        public async Task<IActionResult> VerifyAccountDetaails(VerifyAccountUserRequestModel model)
+        [HttpPost]
+        [Route("api/v1/VerifyAccountDetails")]
+        public async Task<IActionResult> VerifyAccountDetails(VerifyAccountUserRequestModel model)
         {
             try
             {
