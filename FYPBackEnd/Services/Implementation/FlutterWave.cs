@@ -443,7 +443,7 @@ namespace FYPBackEnd.Services.Implementation
 
             AccountNameVerificationResponse response = new AccountNameVerificationResponse();
             var client = new RestClient(AccountNameUri);
-            var req = new RestRequest(Method.GET);
+            var req = new RestRequest(Method.POST);
 
             req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
             req.AddJsonBody(model);
