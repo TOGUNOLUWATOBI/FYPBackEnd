@@ -716,7 +716,9 @@ namespace FYPBackEnd.Services.Implementation
             transactions = transactions.OrderByDescending(x=> x.CreationDate).ToList();
 
             //take the first count numbers
-            var result  = transactions.Take(count).ToList();
+            transactions  = transactions.Take(count).ToList();
+
+            var result = map.Map<List<TransactionDto>>(transactions);
 
             return ReturnedResponse.SuccessResponse("Transactions retrieved successfully", result, StatusCodes.Successful);
         }

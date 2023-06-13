@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FYPBackEnd.Data.Models.FlutterWave
 {
@@ -53,7 +54,7 @@ namespace FYPBackEnd.Data.Models.FlutterWave
     {
         public string status { get; set; }
         public string message { get; set; }
-        public BillCategories data { get; set; }
+        public List<BillCategories> data { get; set; }
     }
 
     public class BillCategories
