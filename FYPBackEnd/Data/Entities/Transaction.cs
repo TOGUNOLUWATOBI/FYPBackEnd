@@ -29,6 +29,7 @@ namespace FYPBackEnd.Data.Entities
         public decimal TrxFee { get; set; }
         public string Status { get; set; }
         public string Beneficiary { get; set; }
+        public string BeneficiaryName { get; set; }
         public string BeneficiaryBank { get; set; }
         public string BeneficiaryAccountNumber { get; set; }
         public string BeneficiaryBankCode { get; set; }
