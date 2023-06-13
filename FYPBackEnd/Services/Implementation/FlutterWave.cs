@@ -395,6 +395,7 @@ namespace FYPBackEnd.Services.Implementation
                                     TransactionType = TransactionType.CashOut.ToString(),
                                     Status = TransactionStatus.Successful.ToString(),
                                     PostingType = PostingType.Cr.ToString(),
+                                    Beneficiary = "NGN Wallet Funded  |  Wallet Funds",
                                     BeneficiaryBank = model.data.bank_name,
                                     BeneficiaryAccountNumber = model.data.account_number,
                                     BeneficiaryBankCode = model.data.bank_code
