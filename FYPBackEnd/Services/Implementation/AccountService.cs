@@ -747,6 +747,7 @@ namespace FYPBackEnd.Services.Implementation
             {
                 Name = user.FirstName,
                 Balance = account.Balance,
+                ProfilePicture = user.ProficePictureId,
                 Transactions = map.Map<List<TransactionDto>>(transactions)
             }, StatusCodes.Successful);
         }
