@@ -719,12 +719,23 @@ namespace FYPBackEnd.Services.Implementation
 
             //take the first count numbers
             transactions  = transactions.Take(count).ToList();
+            var result = getTransactionDto(transactions);
 
-            var result = map.Map<List<TransactionDto>>(transactions);
+            
 
             return ReturnedResponse.SuccessResponse("Transactions retrieved successfully", result, StatusCodes.Successful);
         }
 
+        private List<TransactionDto> getTransactionDto(List<Transaction> transactions)
+        {
+            var transactionDto = new List<TransactionDto>();
+            foreach (var transaction in transactions)
+            {
+                var dto = map.Map<TransactionDto>(transaction);
+                transactionDto.Add(dto);
+            }
+            return transactionDto;
+        }
 
         public async Task<ApiResponse> GetUserDashboard(string theUserId)
         {
@@ -748,7 +759,7 @@ namespace FYPBackEnd.Services.Implementation
                 Name = user.FirstName,
                 Balance = account.Balance,
                 ProfilePicture = user.ProficePictureId,
-                Transactions = map.Map<List<TransactionDto>>(transactions)
+                Transactions = getTransactionDto(transactions)
             }, StatusCodes.Successful);
         }
 
