@@ -5,6 +5,7 @@ using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Upload;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 using StatusCodes = FYPBackEnd.Data.Constants.StatusCodes;
 
 namespace FYPBackEnd.Services.Implementation
@@ -87,6 +89,13 @@ namespace FYPBackEnd.Services.Implementation
                     }
                     var file = request.ResponseBody;
                     user.ProficePictureId = file.Id;
+
+                    var permission = new Permission
+                    {
+                        Type = "anyone",
+                        Role = "reader",
+                    };
+                    service.Permissions.Create(permission, file.Id).Execute();
                     context.Update(user);
                     await context.SaveChangesAsync();
                     return ReturnedResponse.SuccessResponse(file.Id, file, StatusCodes.Successful);
