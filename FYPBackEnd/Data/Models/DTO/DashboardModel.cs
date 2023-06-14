@@ -8,5 +8,8 @@ namespace FYPBackEnd.Data.Models.DTO
         public string ProfilePicture { get; set; }
         public decimal Balance { get; set; }
         public List<TransactionDto> Transactions { get; set; }
+        public string Lastname { get; set; }
+        public string AccountNumber { get; set; }
+        public string Bank { get; set; }
     }
 }

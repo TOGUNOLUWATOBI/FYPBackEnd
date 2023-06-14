@@ -759,7 +759,10 @@ namespace FYPBackEnd.Services.Implementation
                 Name = user.FirstName,
                 Balance = account.Balance,
                 ProfilePicture = user.ProficePictureId,
-                Transactions = transactions
+                Transactions = transactions,
+                Lastname = user.LastName,
+                Bank = account.ThirdPartyBankName,
+                AccountNumber = account.ThirdPartyAccountNumber
             }, StatusCodes.Successful);
         }
 
