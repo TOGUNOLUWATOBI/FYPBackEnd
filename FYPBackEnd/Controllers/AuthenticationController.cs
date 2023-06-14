@@ -258,8 +258,9 @@ namespace FYPBackEnd.Controllers
                                             .Select(e => e.ErrorMessage));
                     return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
                 }
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
 
-                var resp = await userService.ResetPassword(model);
+                var resp = await userService.ResetPassword(theUserId,model);
                 if (resp.Status == Status.Successful.ToString())
                 {
                     return Ok(resp);

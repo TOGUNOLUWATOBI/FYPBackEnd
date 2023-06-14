@@ -227,9 +227,9 @@ namespace FYPBackEnd.Services.Implementation
 
 
         
-        public async Task<ApiResponse> ResetPassword(ChangePasswordRequestModel model)
+        public async Task<ApiResponse> ResetPassword(string theUserId, ChangePasswordRequestModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByIdAsync(theUserId);
             if (user == null)
             {
                 return ReturnedResponse.ErrorResponse("No Recond found", null, StatusCodes.NoRecordFound);
