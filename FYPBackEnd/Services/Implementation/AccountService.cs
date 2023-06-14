@@ -752,14 +752,14 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             var resp = await FetchUserLastTrasnasctions(theUserId);
-            var transactions = (List<Transaction>)resp.Data;
+            var transactions = (List<TransactionDto>)resp.Data;
 
             return ReturnedResponse.SuccessResponse("Dashboard details", new DashboardModel
             {
                 Name = user.FirstName,
                 Balance = account.Balance,
                 ProfilePicture = user.ProficePictureId,
-                Transactions = getTransactionDto(transactions)
+                Transactions = transactions
             }, StatusCodes.Successful);
         }
 
