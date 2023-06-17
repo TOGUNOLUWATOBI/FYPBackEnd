@@ -215,23 +215,24 @@ namespace FYPBackEnd.Services.Implementation
                 {
                     if (flutterTransfer.Status == Status.Successful.ToString())
                     {
-                        var resp = (InitiateTransferResponseModel)flutterTransfer.Data;
+                        return flutterTransfer;
+                        //var resp = (InitiateTransferResponseModel)flutterTransfer.Data;
 
-                        transaction.Status = TransactionStatus.Successful.ToString();
-                        transaction.LastModifiedDate = DateTime.Now;
+                        //transaction.Status = TransactionStatus.Successful.ToString();
+                        //transaction.LastModifiedDate = DateTime.Now;
 
 
-                        context.Update(transaction);
-                        await context.SaveChangesAsync();
+                        //context.Update(transaction);
+                        //await context.SaveChangesAsync();
 
-                        var transactionDto = map.Map<TransactionDto>(transaction);
+                        //var transactionDto = map.Map<TransactionDto>(transaction);
 
-                        transactionDto.BeneficiaryName = model.BeneficiaryName;
-                        transactionDto.BeneficiaryBank = model.BeneficiaryBank;
+                        //transactionDto.BeneficiaryName = model.BeneficiaryName;
+                        //transactionDto.BeneficiaryBank = model.BeneficiaryBank;
 
-                        //todo: send email and do push notifiication
+                        ////todo: send email and do push notifiication
 
-                        return ReturnedResponse.SuccessResponse("Transfer Successfully initiated", transactionDto, StatusCodes.Successful);
+                        //return ReturnedResponse.SuccessResponse("Transfer Successfully initiated", transactionDto, StatusCodes.Successful);
                     }
                 }
 
