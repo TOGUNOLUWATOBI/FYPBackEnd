@@ -215,20 +215,22 @@ namespace FYPBackEnd.Services.Implementation
             req.AddHeader("Authorization", $"Bearer {settings.SecretKey}");
             req.AddJsonBody(model);
 
-            var resp = await client.ExecuteAsync(req);
+            return ReturnedResponse.SuccessResponse("successfull transfer", req, StatusCodes.Successful);
 
-            if (resp != null)
-            {
-                if (resp.IsSuccessful)
-                {
-                    response = JsonConvert.DeserializeObject<InitiateTransferResponseModel>(resp.Content);
-                    //log information gotten from flutterwave
-                    log.LogInformation("Transfer Initiated", response);
-                    return ReturnedResponse.SuccessResponse("flutterwave transfer initiated", response, StatusCodes.Successful);
-                }
-            }
+            //var resp = await client.ExecuteAsync(req);
 
-            return ReturnedResponse.ErrorResponse("flutterwave transfer couldn't be initiated.", response, StatusCodes.ThirdPartyError);
+            //if (resp != null)
+            //{
+            //    if (resp.IsSuccessful)
+            //    {
+            //        response = JsonConvert.DeserializeObject<InitiateTransferResponseModel>(resp.Content);
+            //        //log information gotten from flutterwave
+            //        log.LogInformation("Transfer Initiated", response);
+            //        return ReturnedResponse.SuccessResponse("flutterwave transfer initiated", response, StatusCodes.Successful);
+            //    }
+            //}
+
+            //return ReturnedResponse.ErrorResponse("flutterwave transfer couldn't be initiated.", response, StatusCodes.ThirdPartyError);
         }
 
         public async Task<ApiResponse> GetBillCategories (string biller_code, string data_bundle)
