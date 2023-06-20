@@ -36,12 +36,13 @@ namespace FYPBackEnd.Services.Implementation
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper map;
         private readonly IMailService mailService;
+        private readonly IGoogleDrive googleDrive;
         private readonly IUVerify uVerify;
         private readonly IAccountService accountService;
         private readonly AppSettings _appSettings;
 
 
-        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings, IAccountService accountService, IUVerify uVerify)
+        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings, IAccountService accountService, IUVerify uVerify, IGoogleDrive googleDrive)
         {
             _userManager = userManager;
             this.context = context;
@@ -51,6 +52,7 @@ namespace FYPBackEnd.Services.Implementation
             _appSettings = appSettings.Value;
             this.accountService = accountService;
             this.uVerify = uVerify;
+            this.googleDrive = googleDrive;
         }
 
         public async Task<ApiResponse> ActivateUser(string email)
@@ -425,6 +427,8 @@ namespace FYPBackEnd.Services.Implementation
             {
                 if(resp.Status == Status.Successful.ToString())
                 {
+
+                    var uploadPic = await googleDrive.UploadFileWithMetaData(model.Selfie, user.Id);
                     user.IsKYCComplete = true;
                     var account = await context.Accounts.FirstOrDefaultAsync(x => x.UserId == user.Id);
                     if (model.DocType == DocType.BVN.ToString())

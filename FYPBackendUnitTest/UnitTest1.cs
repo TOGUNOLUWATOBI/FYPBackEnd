@@ -32,6 +32,7 @@ namespace FYPBackendUnitTest
         private Mock<IOtpService> otpService;
         private Mock<IAccountService> accountService;
         private Mock<IUVerify> uverify;
+        private Mock<IGoogleDrive> googleDrive;
         //private Mock<>
 
         private UserService _service;
@@ -59,6 +60,7 @@ namespace FYPBackendUnitTest
             mailService = new Mock<IMailService>();
             accountService = new Mock<IAccountService>();
             uverify = new Mock<IUVerify>();
+            googleDrive = new Mock<IGoogleDrive>();
 
             var mockMapper = new MapperConfiguration(cfg =>
             {
@@ -82,7 +84,7 @@ namespace FYPBackendUnitTest
             mailService.Setup(m => m.SendVerificationEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(resp);
             
 
-            _service = new UserService(_userManager.Object, _context.Object, _signInManager.Object, mapper, mailService.Object, _appSettings.Object,accountService.Object, uverify.Object);
+            _service = new UserService(_userManager.Object, _context.Object, _signInManager.Object, mapper, mailService.Object, _appSettings.Object,accountService.Object, uverify.Object, googleDrive.Object);
         }
 
         [Test]
