@@ -752,7 +752,7 @@ namespace FYPBackEnd.Services.Implementation
                 return ReturnedResponse.ErrorResponse("An error occurred User account doesn't exist", null, StatusCodes.NoRecordFound);
             }
 
-            var apiResp = await flutterWave.GetPaymentSubaccountBalance("1011026001cZiCCOW1EO");
+            var apiResp = await flutterWave.GetPaymentSubaccountBalance(account.ThirdPartyReference);
 
             if (apiResp.Status != Status.Successful.ToString())
             {
