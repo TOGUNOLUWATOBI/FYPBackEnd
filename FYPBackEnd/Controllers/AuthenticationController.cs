@@ -278,7 +278,7 @@ namespace FYPBackEnd.Controllers
                 return BadRequest(ReturnedResponse.ErrorResponse("an error occured in resseting password", null, StatusCodes.ExceptionError));
             }
         }
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("api/v1/PerformKyc")]
         public async Task<IActionResult> PerformKyc([FromForm]VerifyKycRequestModel model)
