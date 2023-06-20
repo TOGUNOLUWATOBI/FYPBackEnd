@@ -1,5 +1,6 @@
 ﻿using FYPBackEnd.Data;
 using FYPBackEnd.Data.Constants;
+using FYPBackEnd.Data.Entities;
 using FYPBackEnd.Data.Enums;
 using FYPBackEnd.Data.Models.FlutterWave;
 using FYPBackEnd.Data.ReturnedResponse;
@@ -46,7 +47,10 @@ namespace FYPBackEnd.Controllers
         {
             try
             {
+                var fw = new FlutterwaveWebhook() { webhook = request.ToString(), CreationDate = DateTime.Now };
+                context.FW.Add(fw);
 
+                await context.SaveChangesAsync();
                 var requestHeaders = new Dictionary<string, string>();
                 foreach (var header in Request.Headers)
                 {
