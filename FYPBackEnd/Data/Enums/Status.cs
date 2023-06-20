@@ -32,4 +32,12 @@
         UserVerification,
         PasswordReset
     }
+
+    public enum DocType
+    {
+        BVN,
+        NIN,
+        Passport,
+        DriversLicensce
+    }
 }

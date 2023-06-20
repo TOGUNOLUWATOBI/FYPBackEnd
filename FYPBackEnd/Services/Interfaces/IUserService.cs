@@ -14,7 +14,7 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> GetUser(string email);
         Task<ApiResponse> GetUsers();
         Task<ApiResponse> Login(LoginRequestModel model);
-
+        Task<ApiResponse> performUserKYC(VerifyKycRequestModel model);
         Task<ApiResponse> ForgotPasswordRequest(string email);
         Task<ApiResponse> ResetPassword(string theUserId, ChangePasswordRequestModel model);
         Task<ApiResponse> VerifyOtp(string otpCode);

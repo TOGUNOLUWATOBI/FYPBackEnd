@@ -117,6 +117,7 @@ namespace FYPBackEnd
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<IMailService, MailService>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<IUVerify, UVerify>();
             services.AddScoped<IFlutterWave, FlutterWave>();
             services.AddScoped<IGoogleDrive, GoogleDrive>();
             services.AddScoped<IOkra, Okra>();

@@ -17,7 +17,6 @@
     {
         public string lastName { get; set; }
         public string firstName { get; set; }
-        public string dateOfBirth { get; set; }
     }
 
     public class Selfie

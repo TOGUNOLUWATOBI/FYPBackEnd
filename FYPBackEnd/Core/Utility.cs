@@ -2,8 +2,12 @@
 using FYPBackEnd.Data.ReturnedResponse;
 using System.Text.RegularExpressions;
 using System;
+using System.Drawing;
 using FYPBackEnd.Data.Models;
 using FYPBackEnd.Data.Constants;
+using Microsoft.AspNetCore.Http;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace FYPBackEnd.Core
 {
@@ -71,33 +75,82 @@ namespace FYPBackEnd.Core
 
             if (!specialChar.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain special character", null, StatusCodes.ModelError);
+                return ReturnedResponse.ErrorResponse("Password must contain special character", null, Data.Constants.StatusCodes.ModelError);
             }
 
             if (s.Length < 8)
             {
-                return ReturnedResponse.ErrorResponse("Password must be greater than 8 characters", null, StatusCodes.ModelError);
+                return ReturnedResponse.ErrorResponse("Password must be greater than 8 characters", null, Data.Constants.StatusCodes.ModelError);
             }
 
             if (!upperCase.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain at least upper case character", null, StatusCodes.ModelError);
+                return ReturnedResponse.ErrorResponse("Password must contain at least upper case character", null, Data.Constants.StatusCodes.ModelError);
             }
 
             if (!lowerCase.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain at least lower case character", null, StatusCodes.ModelError);
+                return ReturnedResponse.ErrorResponse("Password must contain at least lower case character", null, Data.Constants.StatusCodes.ModelError);
             }
 
             if (!number.IsMatch(s))
             {
-                return ReturnedResponse.ErrorResponse("Password must contain at least one number", null, StatusCodes.ModelError);
+                return ReturnedResponse.ErrorResponse("Password must contain at least one number", null, Data.Constants.StatusCodes.ModelError);
             }
 
-            return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);
+            return ReturnedResponse.SuccessResponse(null, true, Data.Constants.StatusCodes.Successful);
         }
 
-       
+        //private IFormFile ResizeImage(Image image, int maxWidth, int maxHeight)
+        //{
+        //    int width = image.Width;
+        //    int height = image.Height;
+
+        //    // Calculate the aspect ratio
+        //    double aspectRatio = (double)width / height;
+
+        //    // Calculate the new dimensions while maintaining the aspect ratio
+        //    if (width > maxWidth || height > maxHeight)
+        //    {
+        //        if (aspectRatio > 1)
+        //        {
+        //            width = maxWidth;
+        //            height = (int)(width / aspectRatio);
+        //        }
+        //        else
+        //        {
+        //            height = maxHeight;
+        //            width = (int)(height * aspectRatio);
+        //        }
+        //    }
+
+        //    // Create a new bitmap with the desired dimensions
+        //    Bitmap resizedImage = new Bitmap(width, height);
+
+        //    // Resize the image using Graphics
+        //    using (Graphics graphics = Graphics.FromImage(resizedImage))
+        //    {
+        //        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+        //        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+        //        graphics.DrawImage(image, 0, 0, width, height);
+        //    }
+
+        //    return resizedImage;
+        //}
+
+
+        public static Image ResizeImage(IFormFile file, int maxWidth, int maxHeight)
+        {
+            using (var image = Image.Load(file.OpenReadStream()))
+            {
+                image.Mutate(ctx => ctx.Resize(maxWidth, maxHeight));
+                var clonedImage = image.Clone(context =>
+                {
+                    context.Resize(maxWidth, maxHeight);
+                });
+                return clonedImage;
+            }
+        }
         public static bool ValidatePin(string s)
         {
             for (int i = 1; i < s.Length; i++)

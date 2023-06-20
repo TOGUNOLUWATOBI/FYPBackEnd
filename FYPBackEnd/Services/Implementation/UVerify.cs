@@ -93,6 +93,8 @@ namespace FYPBackEnd.Services.Implementation
             var client = new RestClient(verifyPassportUri);
             var req = new RestRequest(Method.POST);
 
+            model.isSubjectConsent = true;
+
             req.AddHeader("token", $"{settings.ApiKey}");
             req.AddJsonBody(model);
 
@@ -120,6 +122,8 @@ namespace FYPBackEnd.Services.Implementation
             DriversLicenseVerifyResponseModel response = new DriversLicenseVerifyResponseModel();
             var client = new RestClient(verifyDriverLicenseUri);
             var req = new RestRequest(Method.POST);
+
+            model.isSubjectConsent = true;
 
             req.AddHeader("token", $"{settings.ApiKey}");
             req.AddJsonBody(model);

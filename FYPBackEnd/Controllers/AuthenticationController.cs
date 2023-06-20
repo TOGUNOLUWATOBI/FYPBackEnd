@@ -279,7 +279,42 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/v1/PerformKyc")]
+        public async Task<IActionResult> PerformKyc([FromForm]VerifyKycRequestModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
 
+                if (model == null)
+                    return BadRequest(ReturnedResponse.ErrorResponse("no file was uploaded", null, StatusCodes.ModelError));
+
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+                var resp = await userService.performUserKYC(model);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in uploading picture", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured in uploading picutre: {errMessage}", null, StatusCodes.ExceptionError));
+            }
+        }
 
 
         [HttpPost]

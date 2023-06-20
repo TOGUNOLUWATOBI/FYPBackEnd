@@ -20,6 +20,12 @@ using FYPBackEnd.Settings;
 using FYPBackEnd.Data.Constants;
 using System.Collections.Generic;
 using System.Security.Claims;
+using FYPBackEnd.Data.Models.UVerify.Requests;
+using System.IO;
+using System.Drawing;
+using FYPBackEnd.Data.Models.UVerify.Request;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -30,11 +36,12 @@ namespace FYPBackEnd.Services.Implementation
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper map;
         private readonly IMailService mailService;
+        private readonly IUVerify uVerify;
         private readonly IAccountService accountService;
         private readonly AppSettings _appSettings;
 
 
-        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings, IAccountService accountService)
+        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings, IAccountService accountService, IUVerify uVerify)
         {
             _userManager = userManager;
             this.context = context;
@@ -43,6 +50,7 @@ namespace FYPBackEnd.Services.Implementation
             this.mailService = mailService;
             _appSettings = appSettings.Value;
             this.accountService = accountService;
+            this.uVerify = uVerify;
         }
 
         public async Task<ApiResponse> ActivateUser(string email)
@@ -96,6 +104,7 @@ namespace FYPBackEnd.Services.Implementation
             user.Status = UserStatus.Inactive.ToString();
             user.Gender = model.Gender;
             user.IsKYCComplete = false;
+            user.IsAndroidDevice = model.isAndroid;
             user.LastModifiedDate = DateTime.Now;
             user.CreationDate = DateTime.Now;
 
@@ -294,6 +303,150 @@ namespace FYPBackEnd.Services.Implementation
             }
         }
 
+
+
+        public async Task<ApiResponse> performUserKYC (VerifyKycRequestModel model)
+        {
+            
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            
+
+            string base64String = "";
+            if (model.Selfie != null)
+            {
+                var image = Core.Utility.ResizeImage(model.Selfie, 4050, 4050);
+                using (MemoryStream m = new MemoryStream())
+                {
+                    image.Save(m,new JpegEncoder());
+                    m.Seek(0, SeekOrigin.Begin);
+                    //model.Selfie.CopyTo(m);
+                    byte[] imageBytes = m.ToArray();
+
+                    // Convert byte[] to Base64 String
+                    base64String = Convert.ToBase64String(imageBytes);
+                    
+                }
+            }
+
+            if (user == null)
+                return ReturnedResponse.ErrorResponse("User doesn't exist", null, StatusCodes.NoRecordFound);
+
+            var resp = new ApiResponse();
+
+            if( model.DocType == DocType.NIN.ToString())
+            {
+                resp = await uVerify.VerifyNin(new NinVerificationRequestModel()
+                {
+                    id = model.DocNumber,
+                    isSubjectConsent = true,
+                    validations = new Validations()
+                    {
+                        selfie = new Selfie() 
+                        {
+                            image = string.IsNullOrEmpty(base64String) ? null : string.Concat("data:image/",Path.GetExtension(model.Selfie.FileName).TrimStart('.'), ";base64,", base64String)
+                        },
+                        data = new Data.Models.UVerify.Requests.Data
+                        {
+                            lastName = user.LastName,
+                            firstName = user.FirstName
+                        }
+                    }
+                });
+
+            }
+            else if (model.DocType == DocType.BVN.ToString())
+            {
+                resp = await uVerify.VerifyBVN(new BvnVerificationRequestModel()
+                {
+                    id = model.DocNumber,
+                    isSubjectConsent = true,
+                    validations = new Validations()
+                    {
+                        selfie = new Selfie()
+                        {
+                            image = string.IsNullOrEmpty(base64String) ? null : base64String
+                        },
+                        data = new Data.Models.UVerify.Requests.Data
+                        {
+                            lastName = user.LastName,
+                            firstName = user.FirstName
+                        }
+                    }
+                });
+            }
+            else if (model.DocType == DocType.Passport.ToString())
+            {
+                resp = await uVerify.VerifyPassport(new PassportVerificationRequestModel()
+                {
+                    id = model.DocNumber,
+                    isSubjectConsent = true,
+                    validations = new Validations()
+                    {
+                        selfie = new Selfie()
+                        {
+                            image = string.IsNullOrEmpty(base64String) ? null : base64String
+                        },
+                        data = new Data.Models.UVerify.Requests.Data
+                        {
+                            lastName = user.LastName,
+                            firstName = user.FirstName
+                        }
+                    }
+                });
+            }
+            else if (model.DocType == DocType.DriversLicensce.ToString())
+            {
+                resp = await uVerify.VerifyDriversLicense(new DriverLicesnseVerificationRequestModel()
+                {
+                    id = model.DocNumber,
+                    isSubjectConsent = true,
+                    validations = new Validations()
+                    {
+                        selfie = new Selfie()
+                        {
+                            image = string.IsNullOrEmpty(base64String) ? null : base64String
+                        },
+                        data = new Data.Models.UVerify.Requests.Data
+                        {
+                            lastName = user.LastName,
+                            firstName = user.FirstName
+                        }
+                    }
+                });
+            }
+            else
+            {
+                return ReturnedResponse.ErrorResponse($"document type not found: {model.DocType}", null, StatusCodes.ModelError);
+            }
+
+
+            if(resp != null)
+            {
+                if(resp.Status == Status.Successful.ToString())
+                {
+                    user.IsKYCComplete = true;
+                    var account = await context.Accounts.FirstOrDefaultAsync(x => x.UserId == user.Id);
+                    if (model.DocType == DocType.BVN.ToString())
+                        account.Tier = 1;
+                    else
+                        account.Tier = 3;
+
+                    context.Update(account);
+                    context.Update(user);
+
+                    await context.SaveChangesAsync();
+
+                    return ReturnedResponse.SuccessResponse("User Kyc is complete", null, StatusCodes.Successful);
+                }
+
+                return resp;
+            }
+
+            return ReturnedResponse.ErrorResponse("An error occured", null, StatusCodes.GeneralError);
+        }
+
+        
         public Task<ApiResponse> UpdateUser()
         {
             throw new System.NotImplementedException();
