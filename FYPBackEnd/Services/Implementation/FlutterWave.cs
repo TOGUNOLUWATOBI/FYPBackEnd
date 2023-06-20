@@ -124,7 +124,7 @@ namespace FYPBackEnd.Services.Implementation
             if (string.IsNullOrEmpty(thirdpartyReference))
                 return ReturnedResponse.ErrorResponse("thirdpartyReference Can't be null or empty", null, StatusCodes.GeneralError);
 
-            var response = new GetVirtualAccountResponseModel();
+            var response = new PayoutSubaccountBalance();
             string getPaymentSubaccountBalanceUri = string.Concat(settings.BaseUrl, settings.PaymentSubaccount, "/", thirdpartyReference,"/","balances");
 
             var client = new RestClient(getPaymentSubaccountBalanceUri);
@@ -137,9 +137,9 @@ namespace FYPBackEnd.Services.Implementation
             {
                 if (resp.IsSuccessful)
                 {
-                    response = JsonConvert.DeserializeObject<GetVirtualAccountResponseModel>(resp.Content);
+                    response = JsonConvert.DeserializeObject<PayoutSubaccountBalance>(resp.Content);
                     //log information gotten from flutterwave
-                    log.LogInformation("Get VIrtual Account", response);
+                    log.LogInformation("Get payment subaccount balance:", response);
                     return ReturnedResponse.SuccessResponse("flutterwave payment subaccount balance", response, StatusCodes.Successful);
                 }
             }

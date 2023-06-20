@@ -752,13 +752,29 @@ namespace FYPBackEnd.Services.Implementation
                 return ReturnedResponse.ErrorResponse("An error occurred User account doesn't exist", null, StatusCodes.NoRecordFound);
             }
 
+            var apiResp = await flutterWave.GetPaymentSubaccountBalance("1011026001cZiCCOW1EO");
+
+            if (apiResp.Status != Status.Successful.ToString())
+            {
+                return apiResp;
+            }
+
+            var apiRespData = (PayoutSubaccountBalance)apiResp.Data;
+
+            var balance = apiRespData.data.available_balance;
+
             var resp = await FetchUserLastTrasnasctions(theUserId);
             var transactions = (List<TransactionDto>)resp.Data;
+
+
+            account.Balance = (decimal)balance;
+            context.Accounts.Update(account);
+            await context.SaveChangesAsync();
 
             return ReturnedResponse.SuccessResponse("Dashboard details", new DashboardModel
             {
                 Name = user.FirstName,
-                Balance = account.Balance,
+                Balance = (decimal) balance,
                 ProfilePicture = user.ProficePictureId,
                 Transactions = transactions,
                 Lastname = user.LastName,

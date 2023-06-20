@@ -20,6 +20,23 @@ namespace FYPBackEnd.Data.Models.FlutterWave
     }
 
 
+
+    public class PayoutSubaccountBalance
+    {
+        public string status { get; set; }
+        public string message { get; set; }
+        public PaymentSubaccountBalanceData data { get; set; }
+    }
+
+    public class PaymentSubaccountBalanceData
+    {
+        public string currency { get; set; }
+        public float available_balance { get; set; }
+        public int ledger_balance { get; set; }
+    }
+
+
+
     public class CreateVIrtualResponseModel
     {
         public string Status { get; set; }
