@@ -69,7 +69,7 @@ namespace FYPBackEnd.Services.Implementation
             req.AddJsonBody(model);
 
             var resp = await client.ExecuteAsync(req);
-            return ReturnedResponse.SuccessResponse("bbb", resp.Content, StatusCodes.Successful);
+
             if (resp != null)
             {
                 if (resp.IsSuccessful)
