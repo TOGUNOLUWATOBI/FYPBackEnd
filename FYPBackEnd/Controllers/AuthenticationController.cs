@@ -296,7 +296,7 @@ namespace FYPBackEnd.Controllers
                 if (model == null)
                     return BadRequest(ReturnedResponse.ErrorResponse("no file was uploaded", null, StatusCodes.ModelError));
 
-                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+                
                 var resp = await userService.performUserKYC(model);
                 if (resp.Status == Status.Successful.ToString())
                 {
@@ -311,8 +311,8 @@ namespace FYPBackEnd.Controllers
             catch (Exception ex)
             {
                 var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
-                log.LogInformation(string.Concat($"Error occured in uploading picture", errMessage));
-                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured in uploading picutre: {errMessage}", null, StatusCodes.ExceptionError));
+                log.LogInformation(string.Concat($"Error occured in performing kyc", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured in performing kyc: {errMessage}", null, StatusCodes.ExceptionError));
             }
         }
 

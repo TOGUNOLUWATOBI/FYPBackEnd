@@ -47,7 +47,7 @@ namespace FYPBackEnd.Controllers
         {
             try
             {
-                var fw = new FlutterwaveWebhook() { webhook = request.ToString(), CreationDate = DateTime.Now };
+                var fw = new FlutterwaveWebhook() {id = Guid.NewGuid(), webhook = request.ToString(), CreationDate = DateTime.Now , LastModifiedDate = DateTime.Now};
                 context.FW.Add(fw);
 
                 await context.SaveChangesAsync();
