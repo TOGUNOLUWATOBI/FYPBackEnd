@@ -79,9 +79,10 @@ namespace FYPBackEnd.Services.Implementation
                     log.LogInformation("User kyc(you verify): NIN verification successful", response);
                     return ReturnedResponse.SuccessResponse("NIN verification successful", response, StatusCodes.Successful);
                 }
+                return ReturnedResponse.ErrorResponse("youverify error verify user NIN", resp.Content, StatusCodes.ThirdPartyError);
             }
 
-            return ReturnedResponse.ErrorResponse("youverify couldn't successfully verify user NIN", response, StatusCodes.ThirdPartyError);
+            return ReturnedResponse.ErrorResponse("youverify couldn't successfully verify user NIN", resp.Content, StatusCodes.ThirdPartyError);
         }
 
 
