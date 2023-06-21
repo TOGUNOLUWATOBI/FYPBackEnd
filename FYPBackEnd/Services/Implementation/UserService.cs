@@ -331,6 +331,8 @@ namespace FYPBackEnd.Services.Implementation
                 }
             }
 
+            return ReturnedResponse.SuccessResponse(" Successfully", base64String, StatusCodes.Successful);
+
             if (user == null)
                 return ReturnedResponse.ErrorResponse("User doesn't exist", null, StatusCodes.NoRecordFound);
 
