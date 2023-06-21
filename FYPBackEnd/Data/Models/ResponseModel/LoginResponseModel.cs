@@ -8,6 +8,8 @@ namespace FYPBackEnd.Data.Models.ResponseModel
         public string AccessToken { get; set; }
         public string TokenType { get; set; }
         public DateTime ExpiresIn { get; set; }
+
+        public bool IsKycComplete { get; set; }
         
     }
 }

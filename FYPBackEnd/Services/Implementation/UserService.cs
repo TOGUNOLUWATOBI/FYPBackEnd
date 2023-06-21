@@ -204,6 +204,7 @@ namespace FYPBackEnd.Services.Implementation
                         TokenType = "Bearer",
                         Email = model.EmailAddress,
                         ExpiresIn = DateTime.Now.AddHours(_appSettings.JwtLifespan),
+                        IsKycComplete = user.IsKYCComplete,
                     };
 
 

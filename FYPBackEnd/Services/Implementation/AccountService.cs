@@ -733,6 +733,8 @@ namespace FYPBackEnd.Services.Implementation
             foreach (var transaction in transactions)
             {
                 var dto = map.Map<TransactionDto>(transaction);
+                dto.CreatedDate = transaction.CreationDate.Value.ToString("dd/MM/yyyy");
+                dto.CreatedTime = transaction.CreationDate.Value.ToString("hh:mm:ss tt");
                 transactionDto.Add(dto);
             }
             return transactionDto;

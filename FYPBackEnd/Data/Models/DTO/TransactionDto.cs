@@ -8,6 +8,9 @@ namespace FYPBackEnd.Data.Models.DTO
         public string Reference { get; set; }
         public string Id { get; set; }
         public DateTime? CreationDate { get; set; }
+
+        public string CreatedDate { get; set; }
+        public string CreatedTime { get; set; }
         public string PostingType { get; set; } // cr, dr
         public string TransactionType { get; set; } // transfer, airtime/data, BillsPayment
         public string Status { get; set; }
