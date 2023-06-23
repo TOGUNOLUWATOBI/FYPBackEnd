@@ -36,6 +36,7 @@ namespace FYPBackEnd.Controllers
         {
             this.webhook = webhook;
             this.log = log;
+            this.context = context;
             _environment = environment;
             this.flutterWaveSettings = flutterWaveSettings.Value;
         }
