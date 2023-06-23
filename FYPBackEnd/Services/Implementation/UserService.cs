@@ -78,6 +78,18 @@ namespace FYPBackEnd.Services.Implementation
 
         }
 
+        public async Task<ApiResponse>  SaveFCMToken(string fcmToken, string theUserId)
+        {
+            var user  = await _userManager.FindByIdAsync(theUserId);
+            if(user == null)
+            {
+                return ReturnedResponse.ErrorResponse("User not found", null, StatusCodes.NoRecordFound);
+            }
+
+            user.FCMToken = fcmToken;
+            return ReturnedResponse.SuccessResponse("fcm token saved", true, StatusCodes.Successful);
+        }
+
         public async Task<ApiResponse> CreateUser(SignUpRequestModel model)
         {
             var isUserExist = await _userManager.FindByEmailAsync(model.Email);

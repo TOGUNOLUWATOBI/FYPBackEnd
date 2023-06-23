@@ -6,6 +6,7 @@ using FYPBackEnd.Data.Entities;
 using FYPBackEnd.Data.Enums;
 using FYPBackEnd.Data.Models.DTO;
 using FYPBackEnd.Data.Models.FlutterWave;
+using FYPBackEnd.Data.Models.Notification;
 using FYPBackEnd.Data.Models.RequestModel;
 using FYPBackEnd.Data.Models.ResponseModel;
 using FYPBackEnd.Data.ReturnedResponse;
@@ -234,7 +235,13 @@ namespace FYPBackEnd.Services.Implementation
 
                         //todo: send email and do push notifiication
 
-
+                        await notif.SendNotification(new NotificationModel()
+                        {
+                            Body = $"You have successfully transfered {model.Amount} to {model.BeneficiaryName}",
+                            Title = "Transfer",
+                            IsAndroiodDevice = user.IsAndroidDevice,
+                            DeviceId = user.FCMToken
+                        });
 
                         return ReturnedResponse.SuccessResponse("Transfer Successfully initiated", transactionDto, StatusCodes.Successful);
                     }
@@ -366,6 +373,14 @@ namespace FYPBackEnd.Services.Implementation
                                 var transactionDto = map.Map<TransactionDto>(transaction);
 
                                 transactionDto.PhoneNumber = model.Customer;
+                                // send push notifi
+                                await notif.SendNotification(new NotificationModel()
+                                {
+                                    Body = $"You just bought {model.Amount} for {model.Customer}",
+                                    Title = "Airtime",
+                                    IsAndroiodDevice = user.IsAndroidDevice,
+                                    DeviceId = user.FCMToken
+                                });
 
                                 return ReturnedResponse.SuccessResponse("AirtimData Successfully bought", transactionDto, StatusCodes.Successful);
                             }

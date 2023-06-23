@@ -16,6 +16,9 @@ using Microsoft.EntityFrameworkCore;
 using FYPBackEnd.Data;
 using FYPBackEnd.Data.Entities;
 using FYPBackEnd.Data.Enums;
+using FYPBackEnd.Data.Models.Notification;
+using Google.Apis.Drive.v3.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace FYPBackEnd.Services.Implementation
 {
@@ -24,12 +27,16 @@ namespace FYPBackEnd.Services.Implementation
         public FlutterWaveSettings settings;
         public ILogger<FlutterWave> log;
         private readonly ApplicationDbContext context;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly INotificationService notif;
 
-        public FlutterWave(IOptions<FlutterWaveSettings> settings, ILogger<FlutterWave> log, ApplicationDbContext context)
+        public FlutterWave(IOptions<FlutterWaveSettings> settings, ILogger<FlutterWave> log, ApplicationDbContext context, UserManager<ApplicationUser> userManager, INotificationService notif)
         {
             this.settings = settings.Value;
             this.log = log;
             this.context = context;
+            this.userManager = userManager;
+            this.notif = notif;
         }
 
         public async Task<ApiResponse> CreateVirtualStaticAccount(CreateVIrtualRequestModel model)
@@ -368,7 +375,17 @@ namespace FYPBackEnd.Services.Implementation
                         transaction.Status = TransactionStatus.Completed.ToString();
                         context.Update(transaction);
                         await context.SaveChangesAsync();
+
+                        var user = await userManager.FindByIdAsync(transaction.UserId);
+
                         //todo: push notification that the transaction has been succesful and should reach the beneficiary soon/immediately
+                        await notif.SendNotification(new NotificationModel()
+                        {
+                            Body = $"You have successfully transfered {model.data.amount} to {model.data.fullname}",
+                            Title = "Transfer",
+                            IsAndroiodDevice = user.IsAndroidDevice,
+                            DeviceId = user.FCMToken
+                        });
                         return ReturnedResponse.SuccessResponse("Webhook successful", null, StatusCodes.Successful);
                     }
                     else
@@ -411,7 +428,17 @@ namespace FYPBackEnd.Services.Implementation
 
                                 await context.SaveChangesAsync();
 
+                                var user = await userManager.FindByIdAsync(account.UserId);
+
                                 //add push notification to the user that the transaction was successful
+
+                                await notif.SendNotification(new NotificationModel()
+                                {
+                                    Body = $"You just received {model.data.amount} from {model.data.fullname}",
+                                    Title = "Cash out",
+                                    IsAndroiodDevice = user.IsAndroidDevice,
+                                    DeviceId = user.FCMToken
+                                });
                             }
                         }
                     }
@@ -425,6 +452,15 @@ namespace FYPBackEnd.Services.Implementation
                     if (transaction != null)
                     {
                         //todo: push notification that the transaction has been reversed               /// let see how it goes
+
+                        var user = await userManager.FindByIdAsync(transaction.UserId);
+                        await notif.SendNotification(new NotificationModel()
+                        {
+                            Body = $"We reversed some money into your account",
+                            Title = "Reversal",
+                            IsAndroiodDevice = user.IsAndroidDevice,
+                            DeviceId = user.FCMToken
+                        });
                         //todo: create reversal function in utility so as to avoid depency injection
                         return ReturnedResponse.SuccessResponse("Webhook successful", null, StatusCodes.Successful);
                     }

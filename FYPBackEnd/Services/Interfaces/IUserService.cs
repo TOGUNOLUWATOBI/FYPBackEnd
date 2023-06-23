@@ -13,6 +13,7 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> ActivateUser(string token);
         Task<ApiResponse> GetUser(string email);
         Task<ApiResponse> GetUsers();
+        Task<ApiResponse> SaveFCMToken(string fcmToken, string theUserId);
         Task<ApiResponse> Login(LoginRequestModel model);
         Task<ApiResponse> performUserKYC(VerifyKycRequestModel model);
         Task<ApiResponse> ForgotPasswordRequest(string email);

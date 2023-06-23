@@ -139,6 +139,41 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("api/v1/SaveFcmToke")]
+        public async Task<IActionResult> SaveFcmToke([FromBody]string token)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+
+                var theUserId = GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+                var resp = await userService.SaveFCMToken(token,theUserId);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in the saving the fcm token of the user : {token}", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse("an error has occured", null, StatusCodes.ExceptionError));
+            }
+        }
+
         //[Authorize]
         [HttpGet]
         [Route("api/v1/Users")]
