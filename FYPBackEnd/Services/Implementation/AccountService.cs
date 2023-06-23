@@ -26,14 +26,16 @@ namespace FYPBackEnd.Services.Implementation
     {
         private readonly ApplicationDbContext context;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly INotificationService notif;
         private readonly IFlutterWave flutterWave;
         private readonly IMapper map;
-        public AccountService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFlutterWave flutterWave, IMapper map)
+        public AccountService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFlutterWave flutterWave, IMapper map, INotificationService notif)
         {
             this.context = context;
             this.userManager = userManager;
             this.flutterWave = flutterWave;
             this.map = map;
+            this.notif = notif;
         }
 
         public async Task<ApiResponse> GenerateAccountNumber(string userId)
@@ -231,6 +233,8 @@ namespace FYPBackEnd.Services.Implementation
                         transactionDto.BeneficiaryBank = model.BeneficiaryBank;
 
                         //todo: send email and do push notifiication
+
+
 
                         return ReturnedResponse.SuccessResponse("Transfer Successfully initiated", transactionDto, StatusCodes.Successful);
                     }
