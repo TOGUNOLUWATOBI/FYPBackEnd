@@ -588,6 +588,7 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             user.PanicPIN = hash;
+            user.IsPanicPINSet = true;
             await userManager.UpdateAsync(user);
 
             return ReturnedResponse.SuccessResponse(null, true, StatusCodes.Successful);

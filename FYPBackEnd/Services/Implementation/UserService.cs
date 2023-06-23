@@ -100,6 +100,7 @@ namespace FYPBackEnd.Services.Implementation
             user.Address = model.Address;
             user.SaltProperty = CryptoServices.CreateRandomSalt();
             user.IsPINSet = false;
+            user.IsPanicPINSet = false;
             user.PinTries = 0;
             user.Lga = model.LGA;
             user.State = model.State;
@@ -205,6 +206,8 @@ namespace FYPBackEnd.Services.Implementation
                         Email = model.EmailAddress,
                         ExpiresIn = DateTime.Now.AddHours(_appSettings.JwtLifespan),
                         IsKycComplete = user.IsKYCComplete,
+                        IsPanicPINSet = user.IsPanicPINSet,
+                        IsPINSet = user.IsPINSet,
                     };
 
 

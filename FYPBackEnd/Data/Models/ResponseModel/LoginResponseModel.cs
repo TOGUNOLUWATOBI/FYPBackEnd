@@ -10,6 +10,8 @@ namespace FYPBackEnd.Data.Models.ResponseModel
         public DateTime ExpiresIn { get; set; }
 
         public bool IsKycComplete { get; set; }
+        public bool IsPINSet { get; set; }
+        public bool IsPanicPINSet { get; set; }
         
     }
 }

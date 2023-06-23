@@ -16,6 +16,7 @@ namespace FYPBackEnd.Data.Entities
         public string PanicPIN { get; set; }
         public int PinTries { get; set; }
         public bool IsPINSet { get; set; }
+        public bool IsPanicPINSet { get; set; }
         public string State { get; set; }
         public string Gender { get; set; }
         public string Status { get; set; }
