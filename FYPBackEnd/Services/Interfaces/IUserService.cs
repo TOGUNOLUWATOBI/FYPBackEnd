@@ -11,6 +11,7 @@ namespace FYPBackEnd.Services.Interfaces
         Task<ApiResponse> UpdateUser();
         Task<ApiResponse> DeActivateUser(string email);
         Task<ApiResponse> ActivateUser(string token);
+        Task<ApiResponse> ResendOTP(string email);
         Task<ApiResponse> GetUser(string email);
         Task<ApiResponse> GetUsers();
         Task<ApiResponse> SaveFCMToken(string fcmToken, string theUserId);

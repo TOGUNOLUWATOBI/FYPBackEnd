@@ -36,13 +36,14 @@ namespace FYPBackEnd.Services.Implementation
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper map;
         private readonly IMailService mailService;
+        private readonly IOtpService otpService;
         private readonly IGoogleDrive googleDrive;
         private readonly IUVerify uVerify;
         private readonly IAccountService accountService;
         private readonly AppSettings _appSettings;
 
 
-        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings, IAccountService accountService, IUVerify uVerify, IGoogleDrive googleDrive)
+        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMapper map, IMailService mailService, IOptions<AppSettings> appSettings, IAccountService accountService, IUVerify uVerify, IGoogleDrive googleDrive, IOtpService otpService)
         {
             _userManager = userManager;
             this.context = context;
@@ -53,6 +54,7 @@ namespace FYPBackEnd.Services.Implementation
             this.accountService = accountService;
             this.uVerify = uVerify;
             this.googleDrive = googleDrive;
+            this.otpService = otpService;
         }
 
         public async Task<ApiResponse> ActivateUser(string email)
@@ -118,6 +120,7 @@ namespace FYPBackEnd.Services.Implementation
             user.State = model.State;
             user.Status = UserStatus.Inactive.ToString();
             user.Gender = model.Gender;
+            user.DeviceToken = model.DeviceToken;
             user.IsKYCComplete = false;
             user.IsAndroidDevice = model.isAndroid;
             user.LastModifiedDate = DateTime.Now;
@@ -150,7 +153,30 @@ namespace FYPBackEnd.Services.Implementation
             return ReturnedResponse.SuccessResponse("User successfully deactivated", null, StatusCodes.Successful);
         }
 
+        public async Task<ApiResponse> ResendOTP(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
 
+            if (user == null)
+                return ReturnedResponse.ErrorResponse("user doesn't exists", null, StatusCodes.NoRecordFound);
+
+            var isRegenerated = await otpService.ReSendOtpCode(email);
+
+            if (isRegenerated)
+            {
+                var otp = await context.Otps.FirstOrDefaultAsync(x => x.Email == email);
+                if (otp.Purpose == OtpPurpose.UserVerification.ToString())
+                {
+                    _ = await mailService.SendVerificationEmailAsync(user, otp.Purpose);
+                }
+                else
+                    await mailService.SendForgotPasswordEmailAsync(user, otp.Purpose);
+
+                return ReturnedResponse.SuccessResponse("otp code has been resent", null, StatusCodes.Successful);
+            }
+
+            return ReturnedResponse.ErrorResponse("an error occured", null, StatusCodes.GeneralError);
+        }
 
         public async Task<ApiResponse> GetUser(string email)
         {

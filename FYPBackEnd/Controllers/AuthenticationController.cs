@@ -174,6 +174,41 @@ namespace FYPBackEnd.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("api/v1/ResendOtp")]
+        public async Task<IActionResult> ResendOtp(string email)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errMessage = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+                    return BadRequest(ReturnedResponse.ErrorResponse(errMessage, null, StatusCodes.ModelError));
+                }
+
+                var resp = await userService.ResendOTP(email);
+                if (resp.Status == Status.Successful.ToString())
+                {
+                    return Ok(resp);
+                }
+                else
+                {
+                    return BadRequest(resp);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errMessage = ex.Message == null ? ex.InnerException.ToString() : ex.Message;
+                log.LogInformation(string.Concat($"Error occured in resending otp", errMessage));
+                return BadRequest(ReturnedResponse.ErrorResponse($"an error occured in resending otp: {ex.Message}", null, StatusCodes.ExceptionError));
+            }
+        }
+
+
         //[Authorize]
         [HttpGet]
         [Route("api/v1/Users")]

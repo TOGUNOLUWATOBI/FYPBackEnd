@@ -84,7 +84,7 @@ namespace FYPBackendUnitTest
             mailService.Setup(m => m.SendVerificationEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(resp);
             
 
-            _service = new UserService(_userManager.Object, _context.Object, _signInManager.Object, mapper, mailService.Object, _appSettings.Object,accountService.Object, uverify.Object, googleDrive.Object);
+            _service = new UserService(_userManager.Object, _context.Object, _signInManager.Object, mapper, mailService.Object, _appSettings.Object,accountService.Object, uverify.Object, googleDrive.Object,otpService.Object);
         }
 
         [Test]

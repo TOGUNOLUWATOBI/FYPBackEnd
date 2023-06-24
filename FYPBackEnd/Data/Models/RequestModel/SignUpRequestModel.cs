@@ -21,6 +21,8 @@ namespace FYPBackEnd.Data.Models.RequestModel
         [Required]
         public string Gender { get; set; }
 
+        public string DeviceToken { get; set; }
+
         public bool isAndroid { get; set; }
     }
 }
