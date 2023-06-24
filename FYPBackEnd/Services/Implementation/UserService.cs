@@ -89,6 +89,8 @@ namespace FYPBackEnd.Services.Implementation
             }
 
             user.FCMToken = fcmToken;
+            context.Update(user);
+            await context.SaveChangesAsync();
             return ReturnedResponse.SuccessResponse("fcm token saved", true, StatusCodes.Successful);
         }
 
