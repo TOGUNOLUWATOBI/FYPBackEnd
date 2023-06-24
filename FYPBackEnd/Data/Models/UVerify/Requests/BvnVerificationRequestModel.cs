@@ -5,7 +5,7 @@ namespace FYPBackEnd.Data.Models.UVerify.Request
     public class BvnVerificationRequestModel
     {
         public string id { get; set; }
-        public Metadata metadata { get; set; }
+        
         public bool isSubjectConsent { get; set; }
         public Validations validations { get; set; }
         public bool shouldRetrivedNin { get; set; }
