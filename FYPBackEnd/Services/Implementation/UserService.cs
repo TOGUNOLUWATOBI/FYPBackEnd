@@ -413,7 +413,7 @@ namespace FYPBackEnd.Services.Implementation
                     {
                         selfie = new Selfie()
                         {
-                            image = string.IsNullOrEmpty(base64String) ? null : base64String
+                            image = string.IsNullOrEmpty(base64String) ? null : string.Concat("data:image/", Path.GetExtension(model.Selfie.FileName).TrimStart('.'), ";base64,", base64String)
                         },
                         data = new Data.Models.UVerify.Requests.Data
                         {
@@ -433,7 +433,7 @@ namespace FYPBackEnd.Services.Implementation
                     {
                         selfie = new Selfie()
                         {
-                            image = string.IsNullOrEmpty(base64String) ? null : base64String
+                            image = string.IsNullOrEmpty(base64String) ? null : string.Concat("data:image/", Path.GetExtension(model.Selfie.FileName).TrimStart('.'), ";base64,", base64String)
                         },
                         data = new Data.Models.UVerify.Requests.Data
                         {
@@ -453,7 +453,7 @@ namespace FYPBackEnd.Services.Implementation
                     {
                         selfie = new Selfie()
                         {
-                            image = string.IsNullOrEmpty(base64String) ? null : base64String
+                            image = string.IsNullOrEmpty(base64String) ? null : string.Concat("data:image/", Path.GetExtension(model.Selfie.FileName).TrimStart('.'), ";base64,", base64String)
                         },
                         data = new Data.Models.UVerify.Requests.Data
                         {
