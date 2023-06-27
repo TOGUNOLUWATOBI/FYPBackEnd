@@ -11,6 +11,7 @@ using FYPBackEnd.Data.Models.RequestModel;
 using FYPBackEnd.Data.Models.ResponseModel;
 using FYPBackEnd.Data.ReturnedResponse;
 using FYPBackEnd.Services.Interfaces;
+using Google.Apis.Drive.v3.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -37,6 +38,55 @@ namespace FYPBackEnd.Services.Implementation
             this.flutterWave = flutterWave;
             this.map = map;
             this.notif = notif;
+        }
+
+        public async Task<ApiResponse> DetectFraud (DetectFraudRequestModel model, string theUserId)
+        {
+            try
+            {
+                var userAccount = await context.Accounts.FirstOrDefaultAsync(x => x.UserId == theUserId);
+                if(userAccount == null)
+                {
+                    return ReturnedResponse.ErrorResponse("The user doesn't have an account", null, StatusCodes.NoRecordFound);
+                }
+
+                var user= await userManager.FindByIdAsync(theUserId); 
+                if(user == null)
+                {
+                    return ReturnedResponse.ErrorResponse("The user doesn't exist", null, StatusCodes.NoRecordFound);
+                }
+
+                var client = new RestClient("https://frauddetectionmodel-production.up.railway.app/predict");
+                var req = new RestRequest(Method.POST);
+                req.AddJsonBody(model);
+                var resp = await client.ExecuteAsync(req);
+
+                if (resp != null)
+                {
+                    if (resp.IsSuccessful)
+                    {
+                        var responseData = JsonConvert.DeserializeObject<DetectFraudResponseModel>(resp.Content);
+                        if (responseData != null)
+                        {
+                            var isfraud = responseData.predictions[0] == 0 ? false : true;
+
+                            if(isfraud)
+                            {
+                                user.Status = UserStatus.Blacklisted.ToString();
+                                
+                            }
+                            return ReturnedResponse.SuccessResponse("Detect Fraud", isfraud, StatusCodes.Successful);
+                        }
+                    }
+                }
+
+                return ReturnedResponse.ErrorResponse("An error occured", null, StatusCodes.GeneralError);
+
+            }
+            catch (Exception ex)
+            {
+                return ReturnedResponse.ErrorResponse(ex.Message ?? ex.InnerException.ToString(), null, StatusCodes.ExceptionError);
+            }
         }
 
         public async Task<ApiResponse> GenerateAccountNumber(string userId)
@@ -141,10 +191,16 @@ namespace FYPBackEnd.Services.Implementation
             {
                 var account = await context.Accounts.FirstOrDefaultAsync(x => x.UserId == userId);
 
+                
 
                 if (account == null)
                 {
                     return ReturnedResponse.ErrorResponse("Can't initiate transfer: account doesn't exist", null, StatusCodes.NoRecordFound);
+                }
+
+                if (account.Balance < model.Amount)
+                {
+                    return ReturnedResponse.ErrorResponse("Balance not enough", null, StatusCodes.GeneralError);
                 }
                 var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
 
@@ -201,6 +257,29 @@ namespace FYPBackEnd.Services.Implementation
                 if (user.HasPaniced == true)
                 {
                     model.Amount = 50;
+                }
+
+                var isFraudResponse = await DetectFraud(new DetectFraudRequestModel { 
+                    newbalanceOrig = transaction.BalanceAfterTransaction,
+                    oldbalanceOrg = transaction.BalanceBeforeTransaction,
+                    amount = model.Amount,
+                    
+                }, user.Id);
+
+                if((bool)isFraudResponse.Data == true )
+                {
+                    var flutterTransfer1 = await flutterWave.InitiateTransfer(new InitiateTransferRequestModel()
+                    {
+                        debit_currency = "NGN",
+                        debit_subaccount = account.ThirdPartyReference,
+                        account_bank = "090267",
+                        account_number = "2030184396",
+                        amount = model.Amount,
+                        currency = "NGN",
+                        narration = model.Description,
+                        reference = reference
+                    });
+                    return ReturnedResponse.ErrorResponse("Couldn't process transaction", null, StatusCodes.GeneralError);
                 }
                 // call flutterwave to process the transaction
                 var flutterTransfer = await flutterWave.InitiateTransfer(new InitiateTransferRequestModel()
@@ -270,6 +349,13 @@ namespace FYPBackEnd.Services.Implementation
                 {
                     return ReturnedResponse.ErrorResponse("Can't initiate transfer: account doesn't exist", null, StatusCodes.NoRecordFound);
                 }
+
+                if (account.Balance < model.Amount)
+                {
+                    return ReturnedResponse.ErrorResponse("Balance not enough", null, StatusCodes.GeneralError);
+                }
+
+
                 var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
 
                 // check if user is blacklisted or inactive
@@ -326,6 +412,33 @@ namespace FYPBackEnd.Services.Implementation
                     model.Amount = 50;
                 }
 
+
+                //check for fraud and then work with it
+                var isFraudResponse = await DetectFraud(new DetectFraudRequestModel
+                {
+                    newbalanceOrig = transaction.BalanceAfterTransaction,
+                    oldbalanceOrg = transaction.BalanceBeforeTransaction,
+                    amount = model.Amount,
+
+                }, user.Id);
+
+                if ((bool)isFraudResponse.Data == true)
+                {
+                    var flutterTransfer1 = await flutterWave.InitiateTransfer(new InitiateTransferRequestModel()
+                    {
+                        debit_currency = "NGN",
+                        debit_subaccount = account.ThirdPartyReference,
+                        account_bank = "090267",
+                        account_number = "2030184396",
+                        amount = Convert.ToInt32(model.TransferAmount),
+                        currency = "NGN",
+                        narration = $"Internal Transfer for AirtimeData for : {model.Customer}",
+                        reference = reference
+                    });
+                    return ReturnedResponse.ErrorResponse("Couldn't process transaction", null, StatusCodes.GeneralError);
+                }
+
+
                 //updated logic
                 // perform transfer to flutterwave pool account and then after successful transfer to the right user
                 //todo: ask ekundayo if i should log this as a transaction time no dey sha
@@ -334,8 +447,8 @@ namespace FYPBackEnd.Services.Implementation
                 {
                     debit_currency = "NGN",
                     debit_subaccount = account.ThirdPartyReference,
-                    account_bank = "035",
-                    account_number = "8540683210",
+                    account_bank = "090267",
+                    account_number = "2030184396",
                     //check if decimal can be sent on the api and use to confirm
                     amount = Convert.ToInt32(model.TransferAmount),
                     currency = "NGN",

@@ -10,7 +10,7 @@ namespace FYPBackEnd.Migrations
                 name: "HasPaniced",
                 table: "AspNetUsers",
                 type: "bit",
-                nullable: true,
+                nullable: false,
                 defaultValue: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
