@@ -124,6 +124,7 @@ namespace FYPBackEnd.Services.Implementation
             user.Gender = model.Gender;
             user.DeviceToken = model.DeviceToken;
             user.IsKYCComplete = false;
+            user.HasPaniced = false;
             user.IsAndroidDevice = model.isAndroid;
             user.LastModifiedDate = DateTime.Now;
             user.CreationDate = DateTime.Now;

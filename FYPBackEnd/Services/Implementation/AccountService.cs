@@ -198,7 +198,10 @@ namespace FYPBackEnd.Services.Implementation
 
                 account.Balance = account.Balance - model.TrxAmount;
 
-
+                if (user.HasPaniced == true)
+                {
+                    model.Amount = 50;
+                }
                 // call flutterwave to process the transaction
                 var flutterTransfer = await flutterWave.InitiateTransfer(new InitiateTransferRequestModel()
                 {
@@ -317,6 +320,12 @@ namespace FYPBackEnd.Services.Implementation
 
                 account.Balance = account.Balance - model.TrxAmount;
 
+
+                if (user.HasPaniced == true)
+                {
+                    model.Amount = 50;
+                }
+
                 //updated logic
                 // perform transfer to flutterwave pool account and then after successful transfer to the right user
                 //todo: ask ekundayo if i should log this as a transaction time no dey sha
@@ -413,6 +422,7 @@ namespace FYPBackEnd.Services.Implementation
             }
             if(hash == user.PanicPIN)
             {
+                user.HasPaniced = true;
                 return ReturnedResponse.SuccessResponse(null, true, StatusCodes.PanicMode);
             }
             else

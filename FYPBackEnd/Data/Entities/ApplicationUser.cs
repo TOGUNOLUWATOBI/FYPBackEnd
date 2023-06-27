@@ -26,6 +26,7 @@ namespace FYPBackEnd.Data.Entities
         public bool IsKYCComplete { get; set; }
         public bool IsAndroidDevice { get; set; }
         public string DeviceToken { get; set; }
+        public bool HasPaniced { get; set; }
 
         public string FCMToken { get; set; }
         public DateTime? CreationDate { get; set; }
